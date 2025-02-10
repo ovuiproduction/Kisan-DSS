@@ -111,7 +111,7 @@ export default function Home() {
                 <img src={intelCropRec} alt="" />{" "}
                 <label htmlFor="">Intel CropRec</label>{" "}
               </Link>
-              <Link to='/intel-market-price' className="feature-link">
+              <Link to='/intel-market-selection' className="feature-link">
                 {" "}
                 <img src={intelMarket} alt="" />{" "}
                 <label htmlFor="">Market Price</label>{" "}

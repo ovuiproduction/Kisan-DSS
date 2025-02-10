@@ -18,9 +18,9 @@ export default function App() {
         <Route path="/" element={<Index />} />
         <Route path="/home" element={<Home />} />
         <Route path="/intel-crop-price" element={<IntelPrice />} />
-        <Route path="/intel-crop-price/result" element={<IntelPriceResult />} />
+        <Route path="/intel-price-result" element={<IntelPriceResult />} />
         <Route path="/intel-crop-yield" element={<IntelYield />} />
-        <Route path="/intel-crop-yield/result" element={<IntelYieldResult />} />
+        <Route path="/intel-yield-result" element={<IntelYieldResult />} />
         <Route path="/intel-crop-recommendation" element={<IntelCropRec />} />
         <Route path="/intel-crop-recommendation/result" element={<IntelCropRecResult />} />
         <Route path="/intel-market-selection" element={<IntelMarketPrice />} />

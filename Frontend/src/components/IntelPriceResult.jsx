@@ -1,56 +1,34 @@
 import React, { useEffect, useState } from "react";
 import { Line } from "react-chartjs-2";
+import { useLocation } from "react-router-dom";
 import "chart.js/auto";
-
-import jowarLogo from "../static/Images/jowarlogo.webp"
 
 import "../static/css/intel-price-result.css";
 
-export default function IntelPriceResult() {
-  const [data, setData] = useState({
-    month: "",
-    year: "",
-    cropface: "",
-    prediction: false,
-    avg_value: 0,
-    min_value: 0,
-    max_value: 0,
-    goldmonth: "",
-    maxlow: 0,
-    maxhigh: 0,
-    silvermonth: "",
-    minlow: 0,
-    minhigh: 0,
-    mspyear: [],
-    minPriceYear: [],
-    mspnextyear: [],
-    minPriceNextYear: [],
-    NextYear: "",
-  });
+// import CropImages from "./CropImages";
 
-  // Simulating data fetch (replace with actual API call)
-  useEffect(() => {
-    setData({
-      month: "February",
-      year: "2025",
-      cropface: "https://via.placeholder.com/150",
-      prediction: true,
-      avg_value: 2500,
-      min_value: 2200,
-      max_value: 2800,
-      goldmonth: "June",
-      maxlow: 2700,
-      maxhigh: 2900,
-      silvermonth: "January",
-      minlow: 2000,
-      minhigh: 2300,
-      mspyear: [2300, 2400, 2500, 2700, 2800, 2600, 2500, 2400, 2300, 2200, 2100, 2000],
-      minPriceYear: [2000, 2100, 2200, 2300, 2400, 2300, 2200, 2100, 2000, 1900, 1800, 1700],
-      mspnextyear: [2500, 2600, 2700, 2800, 2900, 2700, 2600, 2500, 2400, 2300, 2200, 2100],
-      minPriceNextYear: [2200, 2300, 2400, 2500, 2600, 2400, 2300, 2200, 2100, 2000, 1900, 1800],
-      NextYear: "2026",
-    });
-  }, []);
+export default function IntelPriceResult() {
+  const location = useLocation()
+  const {state} = location;
+  console.log(state)
+
+  const CropImages = {
+    Bajra: require("../static/CropImages/Bajra.jpg"),
+    Barley: require("../static/CropImages/Barley.jpg"),
+    Cotton: require("../static/CropImages/Cotton.jpg"),
+    Gram: require("../static/CropImages/Gram.jpg"),
+    Groundnut: require("../static/CropImages/Groundnut.jpg"),
+    Jowar: require("../static/CropImages/Jowar.jpg"),
+    Maize: require("../static/CropImages/Maize.jpg"),
+    Masoor: require("../static/CropImages/Masoor.jpg"),
+    Moong: require("../static/CropImages/Moong.jpg"),
+    Soyabean: require("../static/CropImages/Soyabean.jpg"),
+    Sugarcane: require("../static/CropImages/Sugarcane.jpg"),
+    Tur: require("../static/CropImages/Tur.jpg"),
+    Urad: require("../static/CropImages/Urad.jpg"),
+    Wheat: require("../static/CropImages/Wheat.jpg"),
+  };
+  
 
   const chartData = (labels, maxData, minData) => ({
     labels,
@@ -85,23 +63,23 @@ export default function IntelPriceResult() {
       <div className="intel-price-result-nav">
         <a href="/home">Home</a>
       </div>
-      <div className="date">{data.month} / {data.year}</div>
+      <div className="date">{state.month} / {state.year}</div>
       <div className="commoditycontainer">
         <div id="cropimg" className="commodityimg">
-          <img src={jowarLogo} alt="Crop" />
+          <img src={CropImages[state.commodity]} alt="Crop" />
         </div>
         <div className="currcommoditystatistics">
-          {data.prediction && (
+          {state.avgPrice && state.minPrice && state.maxPrice && (
             <>
             <h2>Price Statistics</h2>
               <div className="currAvgprice">
-                <p>Average Price  : {data.avg_value} /quintal</p>
+                <p>Average Price  : {state.avgPrice} /quintal</p>
               </div>
               <div className="minprice">
-                <p>Min Price :  {data.min_value} /quintal</p>
+                <p>Min Price :  {state.minPrice} /quintal</p>
               </div>
               <div className="maxprice">
-                <p>Max Price :  {data.max_value} /quintal</p>
+                <p>Max Price :  {state.maxPrice} /quintal</p>
               </div>
             </>
           )}
@@ -109,14 +87,14 @@ export default function IntelPriceResult() {
         <div className="maxminyear">
           <p className="type">Maximum Price</p>
           <div className="max">
-            <p>Month : {data.goldmonth}</p>
-            <p>Price : {data.maxlow} - {data.maxhigh} /quintal</p>
+            <p>Month : {state.goldMonthIndex}</p>
+            <p>Price : {state.maxMSPPrice} - {state.minMSPPrice} /quintal</p>
             <p>Expected rainfall : Medium</p>
           </div>
           <p className="type">Minimum Price</p>
           <div className="min">
-            <p>Month : {data.silvermonth}</p>
-            <p>Price : {data.minlow} - {data.minhigh} /quintal</p>
+            <p>Month : {state.silverMonthIndex}</p>
+            <p>Price : {state.maxAvgPrice} - {state.minAvgPrice} /quintal</p>
             <p>Expected rainfall : Medium</p>
           </div>
           <p className="condition">
@@ -126,16 +104,16 @@ export default function IntelPriceResult() {
       </div>
 
       <div className="prevyeargraph">
-        <h2>Price Analysis of Current Year - {data.year}</h2>
+        <h2>Price Analysis of Current Year - {state.year}</h2>
         <div  className="graph-canvas" >
-        <Line data={chartData(["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"], data.mspyear, data.minPriceYear)} options={options} />
+        <Line data={chartData(["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"], state.maxPriceCurrSeries, state.minPriceCurrSeries)} options={options} />
         </div>
       </div>
 
       <div className="prevyeargraph">
-        <h2>Price Analysis of Upcoming Year - {data.NextYear}</h2>
+        <h2>Price Analysis of Upcoming Year - {state.NextYear}</h2>
         <div  className="graph-canvas" >
-        <Line data={chartData(["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"], data.mspnextyear, data.minPriceNextYear)} options={options} />
+        <Line data={chartData(["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"], state.maxPriceNextSeries, state.minPriceNextSeries)} options={options} />
         </div>
       </div>
 

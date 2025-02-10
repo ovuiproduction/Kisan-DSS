@@ -1,147 +1,260 @@
-import React from "react";
-
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import "../static/css/intel-yield.css";
 
 export default function IntelYield() {
+  const navigate = useNavigate();
+
+  const [formData, setFormData] = useState({
+    year: "",
+    commodity: "",
+    district: "",
+    area: "",
+    soilColor: "",
+    nitrogen: "",
+    phosphorus: "",
+    potassium: "",
+    fertilizer: "",
+    pH: "",
+  });
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    // Check if all fields are filled
+    for (const key in formData) {
+      if (formData[key] === "") {
+        alert(`Please fill in ${key}`);
+        return;
+      }
+    }
+
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/intel-yield",
+        formData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const responseData = response.data;
+      // Navigate to result page with received data
+      navigate("/intel-yield-result", { state: responseData });
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      alert("Failed to get yield prediction. Try again.");
+    }
+  };
+
   return (
     <div className="intel-yield-root">
       <nav className="intel-price-nav">
-        <div class="intel-header-logotext">
-          Kisan Utpann &ndash; <i>Weather driven crop yield insights for your Region</i>
+        <div className="intel-header-logotext">
+          Kisan Utpann &ndash;{" "}
+          <i>Weather driven crop yield insights for your Region</i>
         </div>
-        <div class="intel-header-content">
+        <div className="intel-header-content">
           <a href="/home">Home</a>
           <a href="/home">Kisan Guide</a>
           <a href="/home">Help</a>
-          <a href="">contact</a>
+          <a href="">Contact</a>
         </div>
       </nav>
-      <div class="main-yield-form_block">
-        <form>
-          <div class="sub-yield-form-block">
-            <div class="yield-formcontent">
+      <div className="main-yield-form_block">
+        <form onSubmit={handleSubmit}>
+          <div className="sub-yield-form-block">
+            <div className="yield-formcontent">
               <label>Commodity : </label>
-              <select className="intel-price-input">
-                <option value="">Commodity</option>
-                <option value="Bajra">Bajra</option>
-                <option value="Barley">Barley</option>
-                <option value="Cotton">Cotton</option>
-                <option value="Gram">Gram</option>
-                <option value="Groundnut">Groundnut</option>
-                <option value="Jowar">Jowar</option>
-                <option value="Maize">Maize</option>
-                <option value="Masoor">Masoor</option>
-                <option value="Moong">Moong</option>
-                <option value="Soyabean">Soyabean</option>
-                <option value="Sugarcane">Sugarcane</option>
-                <option value="Tur">Tur</option>
-                <option value="Urad">Urad</option>
-                <option value="Wheat">Wheat</option>
+              <select
+                name="commodity"
+                className="intel-price-input"
+                value={formData.commodity}
+                onChange={handleChange}
+              >
+                <option value="">Select Commodity</option>
+                {[
+                  "Bajra",
+                  "Barley",
+                  "Cotton",
+                  "Gram",
+                  "Groundnut",
+                  "Jowar",
+                  "Maize",
+                  "Masoor",
+                  "Moong",
+                  "Soyabean",
+                  "Sugarcane",
+                  "Tur",
+                  "Urad",
+                  "Wheat",
+                ].map((crop) => (
+                  <option key={crop} value={crop}>
+                    {crop}
+                  </option>
+                ))}
               </select>
             </div>
 
-            <div class="yield-formcontent">
-              <label for="year">Year : </label>
+            <div className="yield-formcontent">
+              <label htmlFor="year">Year : </label>
               <input
+                name="year"
                 className="intel-price-input"
                 type="text"
                 placeholder="Enter year"
-                min="1"
+                value={formData.year}
+                onChange={handleChange}
               />
             </div>
-
-            <div class="yield-formcontent">
-              <label for="month">Select Month : </label>
-              <select className="intel-price-input">
-               <option value="">Select Month</option>
-                <option value="1">1 - January</option>
-                <option value="2">2 - February</option>
-                <option value="3">3 - March</option>
-                <option value="4">4 - April</option>
-                <option value="5">5 - May</option>
-                <option value="6">6 - June</option>
-                <option value="7">7 - July</option>
-                <option value="8">8 - August</option>
-                <option value="9">9 - September</option>
-                <option value="10">10 - October</option>
-                <option value="11">11 - November</option>
-                <option value="12">12 - December</option>
+            
+            <div className="yield-formcontent">
+              <label htmlFor="district">Select District : </label>
+              <select
+                name="district"
+                value={formData.district}
+                onChange={handleChange}
+              >
+                <option value="">Select District</option>
+                {["Kolhapur", "Pune", "Sangli", "Satara", "Solapur"].map(
+                  (dist) => (
+                    <option key={dist} value={dist}>
+                      {dist}
+                    </option>
+                  )
+                )}
               </select>
             </div>
 
             <div className="yield-formcontent">
-              <label for="district">Select District : </label>
-              <select>
-              <option value="">Select District</option>
-                <option value="Kolhapur">Kolhapur</option>
-                <option value="Pune">Pune</option>
-                <option value="Sangli">Sangli</option>
-                <option value="Satara">Satara</option>
-                <option value="Solapur">Solapur</option>
-              </select>
-            </div>
-            <div className="yield-formcontent">
-              <label for="area">Cultivation Area : </label>
+              <label htmlFor="area">Cultivation Area : </label>
               <input
+                name="area"
                 className="intel-price-input"
                 type="number"
-                placeholder="Enter Area in hecter"
+                placeholder="Enter Area in hectare"
                 min="0"
+                step="0.01"
+                value={formData.area}
+                onChange={handleChange}
               />
             </div>
+
             <div className="yield-formcontent">
-              <label for="fertilizer">Select Fertilizer :</label>
-              <select id="fertilizer" name="fertilizer">
-                <option value="">Select Fertilizer</option>
-                <option value="Urea">Urea</option>
-                <option value="10:26:26 NPK">10:26:26 NPK</option>
-                <option value="Dark Brown">Dark Brown</option>
-                <option value="SSP">SSP</option>
-                <option value="MOP">MOP</option>
-                <option value="18:46:00 NPK">18:46:00 NPK</option>
-                <option value="Chilated Micronutrient">
-                  Chilated Micronutrient
-                </option>
-                <option value="DAP">DAP</option>
+              <label htmlFor="soilColor">Soil Color:</label>
+              <select
+                id="soilColor"
+                name="soilColor"
+                className="intel-price-input"
+                value={formData.soilColor}
+                onChange={handleChange}
+              >
+                <option value="">Select Soil Color</option>
+                <option value="Medium Brown">Medium Brown</option>
                 <option value="Black">Black</option>
-                <option value="12:32:16 NPK">12:32:16 NPK</option>
-                <option value="20:20:20 NPK">20:20:20 NPK</option>
+                <option value="Dark Brown">Dark Brown</option>
+                <option value="Red">Red</option>
+                <option value="Reddish Brown">Reddish Brown</option>
+                <option value="Light Brown">Light Brown</option>
               </select>
             </div>
 
             <div className="yield-formcontent">
-              <label for="Nitrogen">Nitrogen : </label>
+              <label htmlFor="fertilizer">Select Fertilizer :</label>
+              <select
+                name="fertilizer"
+                value={formData.fertilizer}
+                onChange={handleChange}
+              >
+                <option value="">Select Fertilizer</option>
+                {[
+                  "Urea",
+                  "10:26:26 NPK",
+                  "Dark Brown",
+                  "SSP",
+                  "MOP",
+                  "18:46:00 NPK",
+                  "Chilated Micronutrient",
+                  "DAP",
+                  "Black",
+                  "12:32:16 NPK",
+                  "20:20:20 NPK",
+                ].map((fertilizer) => (
+                  <option key={fertilizer} value={fertilizer}>
+                    {fertilizer}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="yield-formcontent">
+              <label htmlFor="nitrogen">Nitrogen : </label>
               <input
+                name="nitrogen"
                 className="intel-price-input"
                 type="number"
                 placeholder="Enter Nitrogen"
                 min="0"
+                step="0.01"
+                value={formData.nitrogen}
+                onChange={handleChange}
               />
             </div>
+
             <div className="yield-formcontent">
-              <label for="Phosphorus">Phosphorus : </label>
+              <label htmlFor="phosphorus">Phosphorus : </label>
               <input
+                name="phosphorus"
                 className="intel-price-input"
                 type="number"
                 placeholder="Enter Phosphorus"
                 min="0"
+                step="0.01"
+                value={formData.phosphorus}
+                onChange={handleChange}
               />
             </div>
+
             <div className="yield-formcontent">
-              <label for="Potassium">Potassium : </label>
+              <label htmlFor="potassium">Potassium : </label>
               <input
+                name="potassium"
                 className="intel-price-input"
                 type="number"
                 placeholder="Enter Potassium"
                 min="0"
+                step="0.01"
+                value={formData.potassium}
+                onChange={handleChange}
+              />
+            </div>
+
+            <div className="yield-formcontent">
+              <label htmlFor="pH">pH : </label>
+              <input
+                name="pH"
+                className="intel-price-input"
+                type="number"
+                placeholder="Enter pH"
+                min="0"
+                step="0.01"
+                value={formData.pH}
+                onChange={handleChange}
               />
             </div>
           </div>
-          <div class="btn-block">
-            <button id="predict_btn" class="submitbtn">
+
+          <div className="btn-block">
+            <button id="predict_btn" className="submitbtn" type="submit">
               Submit
             </button>
-            <div id="loader" class="loader"></div>
+            <div id="loader" className="loader"></div>
           </div>
         </form>
       </div>

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-
+import axios from "axios";
 import "../static/css/intel-market-price.css";
 
 export default function IntelMarketPrice() {
@@ -63,35 +63,82 @@ export default function IntelMarketPrice() {
     ],
   };
 
+  // State to store form values
   const [selectedDistrict, setSelectedDistrict] = useState("");
-  const [marketOptions, setMarketOptions] = useState([]);
+  const [commodity, setCommodity] = useState("");
+  const [year, setYear] = useState("");
+  const [month, setMonth] = useState("");
+  const [marketPriceData, setMarketPriceData] = useState(null);
 
+  // Handle district change
   const handleDistrictChange = (event) => {
     const district = event.target.value;
     setSelectedDistrict(district);
-    setMarketOptions(districtMarkets[district] || []);
+  };
+
+  // Handle form submission
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    // Validate inputs
+    if (!commodity || !year || !month || !selectedDistrict) {
+      alert("Please fill all fields before submitting.");
+      return;
+    }
+
+    try {
+      // Create FormData object
+      const formData = new FormData();
+      formData.append("commodity", commodity);
+      formData.append("year", year);
+      formData.append("month", month);
+      formData.append("district", selectedDistrict);
+
+      // Send request to backend
+      const response = await axios.post(
+        "http://localhost:5000/intel-market-price",
+        formData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      // Store response in state
+      const responseData = response.data;
+      setMarketPriceData(response.data);
+      console.log(responseData);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      alert("Failed to fetch data from the server.");
+    }
   };
 
   return (
     <div className="intel-yield-root">
       <nav className="intel-price-nav">
-        <div class="intel-header-logotext">
+        <div className="intel-header-logotext">
           Krishi Market Guide &ndash; <i>Sell for profit</i>
         </div>
-        <div class="intel-header-content">
+        <div className="intel-header-content">
           <a href="/home">Home</a>
           <a href="/home">Kisan Guide</a>
           <a href="/home">Help</a>
-          <a href="">contact</a>
+          <a href="">Contact</a>
         </div>
       </nav>
-      <div class="main-yield-form_block">
-        <form>
-          <div class="sub-yield-form-block">
-            <div class="yield-formcontent">
+
+      <div className="main-yield-form_block">
+        <form onSubmit={handleSubmit}>
+          <div className="sub-yield-form-block">
+            <div className="yield-formcontent">
               <label>Commodity : </label>
-              <select className="intel-price-input">
-                <option value="">Commodity</option>
+              <select
+                className="intel-price-input"
+                value={commodity}
+                onChange={(e) => setCommodity(e.target.value)}
+              >
+                <option value="">Select Commodity</option>
                 <option value="Bajra">Bajra</option>
                 <option value="Barley">Barley</option>
                 <option value="Cotton">Cotton</option>
@@ -109,66 +156,87 @@ export default function IntelMarketPrice() {
               </select>
             </div>
 
-            <div class="yield-formcontent">
-              <label for="year">Year : </label>
+            <div className="yield-formcontent">
+              <label>Year : </label>
               <input
                 className="intel-price-input"
-                type="text"
+                type="number"
                 placeholder="Enter year"
-                min="1"
+                min="2000"
+                value={year}
+                onChange={(e) => setYear(e.target.value)}
               />
             </div>
 
-            <div class="yield-formcontent">
-              <label for="month">Select Month : </label>
-              <select className="intel-price-input">
+            <div className="yield-formcontent">
+              <label>Month : </label>
+              <select
+                className="intel-price-input"
+                value={month}
+                onChange={(e) => setMonth(e.target.value)}
+              >
                 <option value="">Select Month</option>
-                <option value="1">1 - January</option>
-                <option value="2">2 - February</option>
-                <option value="3">3 - March</option>
-                <option value="4">4 - April</option>
-                <option value="5">5 - May</option>
-                <option value="6">6 - June</option>
-                <option value="7">7 - July</option>
-                <option value="8">8 - August</option>
-                <option value="9">9 - September</option>
-                <option value="10">10 - October</option>
-                <option value="11">11 - November</option>
-                <option value="12">12 - December</option>
+                <option value="1">January</option>
+                <option value="2">February</option>
+                <option value="3">March</option>
+                <option value="4">April</option>
+                <option value="5">May</option>
+                <option value="6">June</option>
+                <option value="7">July</option>
+                <option value="8">August</option>
+                <option value="9">September</option>
+                <option value="10">October</option>
+                <option value="11">November</option>
+                <option value="12">December</option>
               </select>
             </div>
 
             <div className="yield-formcontent">
-              <label for="district">Select District : </label>
-              <select value={selectedDistrict} onChange={handleDistrictChange}>
+              <label>District : </label>
+              <select
+                className="intel-price-input"
+                value={selectedDistrict}
+                onChange={handleDistrictChange}
+              >
                 <option value="">Select District</option>
-                <option value="Kolhapur">Kolhapur</option>
-                <option value="Pune">Pune</option>
-                <option value="Sangli">Sangli</option>
-                <option value="Satara">Satara</option>
-                <option value="Solapur">Solapur</option>
-              </select>
-            </div>
-
-            {/* <div className="yield-formcontent">
-              <label for="market">Select Market : </label>
-              <select>
-                <option value="">Select Market</option>
-                {marketOptions.map((market, index) => (
-                  <option key={index} value={market}>
-                    {market}
+                {Object.keys(districtMarkets).map((district, index) => (
+                  <option key={index} value={district}>
+                    {district}
                   </option>
                 ))}
               </select>
-            </div> */}
+            </div>
           </div>
-          <div class="btn-block">
-            <button id="predict_btn" class="submitbtn">
+
+          <div className="btn-block">
+            <button id="predict_btn" className="submitbtn" type="submit">
               Submit
             </button>
-            <div id="loader" class="loader"></div>
+            <div id="loader" className="loader"></div>
           </div>
         </form>
+
+        {marketPriceData && (
+          <div className="response-container">
+            <h3>Market Price Data</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>Market</th>
+                  <th>Price</th>
+                </tr>
+              </thead>
+              <tbody>
+                {Object.entries(marketPriceData).map(([market, price]) => (
+                  <tr key={market}>
+                    <td>{market}</td>
+                    <td>{price}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   );

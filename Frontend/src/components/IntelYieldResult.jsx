@@ -1,54 +1,34 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
+import { useLocation } from "react-router-dom";
 import "../static/css/intel-yield-result.css";
 
-import jowarLogo from "../static/Images/jowarlogo.webp"
+import CropImages from "./CropImages";
 
-export default function IntelYieldResult(){
-  // Initial empty state
-  const [data, setData] = useState({
-    year: "",
-    season: "",
-    cropFace: "",
-    cropName: "",
-    dist: "",
-    subdivision: "",
-    averageRainfall: "",
-    temperature: "",
-    area: "",
-    fpPerUnitArea: "",
-    currYearPrediction: "",
-    currYearPredictionTonnes: "",
-    marketData: [],
-    governmentData: []
-  });
+export default function IntelYieldResult() {
+  const location = useLocation();
+  const { state } = location;
+  // const CropImages = {
+  //   Bajra: require("../static/CropImages/Bajra.jpg"),
+  //   Barley: require("../static/CropImages/Barley.jpg"),
+  //   Cotton: require("../static/CropImages/Cotton.jpg"),
+  //   Gram: require("../static/CropImages/Gram.jpg"),
+  //   Groundnut: require("../static/CropImages/Groundnut.jpg"),
+  //   Jowar: require("../static/CropImages/Jowar.jpg"),
+  //   Maize: require("../static/CropImages/Maize.jpg"),
+  //   Masoor: require("../static/CropImages/Masoor.jpg"),
+  //   Moong: require("../static/CropImages/Moong.jpg"),
+  //   Soyabean: require("../static/CropImages/Soyabean.jpg"),
+  //   Sugarcane: require("../static/CropImages/Sugarcane.jpg"),
+  //   Tur: require("../static/CropImages/Tur.jpg"),
+  //   Urad: require("../static/CropImages/Urad.jpg"),
+  //   Wheat: require("../static/CropImages/Wheat.jpg"),
+  // };
 
+  if (!state) {
+    return <div>No data received!</div>;
+  }
 
-  useEffect(() => {
-    const fetchedData = {
-      year: "2025",
-      season: "Rabi",
-      cropFace: jowarLogo,
-      cropName: "Wheat",
-      dist: "Pune",
-      subdivision: "Western Maharashtra",
-      averageRainfall: 500,
-      temperature: 28,
-      area: 10,
-      fpPerUnitArea: 2,
-      currYearPrediction: 3200,
-      currYearPredictionTonnes: 3.2,
-      marketData: [
-        { market_name: "Local Market", strengths: ["High demand", "Good prices"], best_for: "Retail sales" },
-        { market_name: "Wholesale Market", strengths: ["Bulk sales", "Lower commission"], best_for: "Large-scale selling" }
-      ],
-      governmentData: [
-        { scheme_name: "PM Kisan", benefits: ["Financial support", "Direct transfers"], purpose: "Supporting farmers" },
-        { scheme_name: "Soil Health Card", benefits: ["Soil testing", "Fertilizer guidance"], purpose: "Improving soil health" }
-      ]
-    };
-    
-    setData(fetchedData);
-  }, []);
+  console.log(state);
 
   return (
     <div className="intel-yield-result-root">
@@ -59,47 +39,45 @@ export default function IntelYieldResult(){
 
       {/* Date Section */}
       <div className="section-header">
-        <h2>{data.year} - {data.season}</h2>
+        <h2>{state.year}</h2>
       </div>
 
       {/* Main Container */}
       <div className="commodity-container">
         <div id="cropimg" className="commodity-img">
-          <img src={data.cropFace} alt="Crop" />
+          <img src={CropImages[state.commodity]} alt="Crop" />
         </div>
 
         <div className="form-details-block">
-          <div className="cropname-block">{data.cropName}</div>
+          <div className="cropname-block">{state.commodity}</div>
           <div className="info-block">
-            <InfoItem label="Dist" value={data.dist} />
-            <InfoItem label="Sub-Division" value={data.subdivision} />
-            <InfoItem label="Rainfall" value={`${data.averageRainfall} mm`} />
-            <InfoItem label="Temperature" value={`${data.temperature}°C`} />
-            <InfoItem label="Area" value={`${data.area} hectares`} />
-            <InfoItem label="Pesticides/Fertilizer" value={`${data.fpPerUnitArea} tonnes/hectare`} />
+            <InfoItem label="Dist" value={state.state} />
+            <InfoItem label="Dist" value={state.district} />
+            <InfoItem label="Rainfall" value={`${state.rainfall} mm`} />
+            <InfoItem label="Temperature" value={`${state.temperature}°C`} />
+            <InfoItem label="Area" value={`${state.area} hectares`} />
+           
           </div>
         </div>
 
-        {/* Statistics Section */}
         <div className="statistics-container">
-          {data.currYearPrediction && (
-            <StatCard label={`Predicted Yield (${data.year})`} value={data.currYearPrediction} unit="Kg/hec" />
+          {state.yieldPrediction && (
+            <StatCard label={`Predicted Yield (${state.year})`} value={state.yieldPrediction} unit="Quintal/hec" />
           )}
-          {data.currYearPredictionTonnes && (
-            <StatCard label={`Predicted Yield (${data.year})`} value={data.currYearPredictionTonnes} unit="tonne/hec" />
+          {state.yieldPredictionTonnes && (
+            <StatCard label={`Predicted Yield (${state.year})`} value={state.yieldPredictionTonnes} unit="tonne/hec" />
           )}
         </div>
       </div>
 
-      {/* Market Guide */}
-      {data.marketData.length > 0 && (
+      {state.marketData.length > 0 && (
         <>
           <div className="section-header">
             <h2>Market Guide</h2>
           </div>
           <div className="market-guide-container">
             <ul className="market-list">
-              {data.marketData.map((market, index) => (
+              {state.marketData.map((market, index) => (
                 <MarketBlock key={index} market={market} />
               ))}
             </ul>
@@ -107,15 +85,14 @@ export default function IntelYieldResult(){
         </>
       )}
 
-      {/* Government Schemes */}
-      {data.governmentData.length > 0 && (
+      {state.governmentData.length > 0 && (
         <>
           <div className="section-header">
             <h2>Government Schemes</h2>
           </div>
           <div className="market-guide-container">
             <ul className="market-list">
-              {data.governmentData.map((scheme, index) => (
+              {state.governmentData.map((scheme, index) => (
                 <SchemeBlock key={index} scheme={scheme} />
               ))}
             </ul>
@@ -123,13 +100,12 @@ export default function IntelYieldResult(){
         </>
       )}
 
-      {/* Footer */}
       <footer className="intel-yield-result-footer">
         <p>© 2025 Kisan-DSS &dash; Intelligent Decision Support System</p>
       </footer>
     </div>
   );
-};
+}
 
 // Reusable Info Block
 const InfoItem = ({ label, value }) => (

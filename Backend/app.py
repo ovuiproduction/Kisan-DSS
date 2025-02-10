@@ -13,6 +13,7 @@ from flask_cors import CORS
 load_dotenv()
 app = Flask(__name__)
 CORS(app)
+CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
 
 #loading models
 try:
@@ -35,24 +36,6 @@ try:
 except FileNotFoundError as e:
     raise FileNotFoundError(f"Required file missing: {e}")
 
-
-
-# crop images
-crop_images = {
-    'KHARIF SORGHUM': '/static/images/jowarlogo.webp',
-    'COTTON': '/static/images/cottonlogo.jpg',
-    'SUGARCANE': '/static/images/sugarcanelogo.jpg',
-    'PEARL MILLET': '/static/images/bajralogo.jpg',
-    'RICE': '/static/images/rice_img.avif',
-    'MAIZE': '/static/images/maize_img.jpg',
-    'FINGER MILLET': '/static/images/finger_millet_img.webp',
-    'PIGEONPEA': '/static/images/Pigeonpea_img.jpg',
-    'MINOR PULSES': '/static/images/MinorPulses_img.jpeg',
-    'GROUNDNUT': '/static/images/groundnut_img.jpg',
-    'SESAMUM': '/static/images/Sesamum_img.webp',
-    'SUNFLOWER': '/static/images/Sunflower_img.jpg',
-    'SOYABEAN': '/static/images/Soyabean_img.webp',
-}
 
 # gemini configuration
 API_KEY = os.getenv("GEMINI_API_KEY")
@@ -80,6 +63,82 @@ def get_data(Prompt):
     except Exception as e:
         print("Error:", e)
         return None
+
+
+# Crop MSP and Average Price Dictionary (Prices in INR per Quintal)
+commodity_price = {
+    'Bajra': {'avg_price': 1900, 'msp_price': 2500},
+    'Barley': {'avg_price': 1600, 'msp_price': 2200},
+    'Cotton': {'avg_price': 5500, 'msp_price': 6620},
+    'Gram': {'avg_price': 4500, 'msp_price': 5440},
+    'Groundnut': {'avg_price': 5000, 'msp_price': 6377},
+    'Jowar': {'avg_price': 2300, 'msp_price': 3180},
+    'Maize': {'avg_price': 1800, 'msp_price': 2225},
+    'Masoor': {'avg_price': 4600, 'msp_price': 6400},
+    'Moong': {'avg_price': 6000, 'msp_price': 8558},
+    'Soyabean': {'avg_price': 3500, 'msp_price': 4600},
+    'Sugarcane': {'avg_price': 290, 'msp_price': 315},  # Per Quintal
+    'Tur': {'avg_price': 5000, 'msp_price': 7000},
+    'Urad': {'avg_price': 4800, 'msp_price': 6950},
+    'Wheat': {'avg_price': 2100, 'msp_price': 2275}
+}
+
+markets_data = {
+    "Kolhapur": ["Kolhapur", "Vadgaonpeth"],
+    "Pune": [
+        "Pune", "Pune(Pimpri)", "Junnar(Otur)", "Pune(Moshi)", "Junnar(Alephata)", 
+        "Manchar", "Junnar", "Nira(Saswad)", "Pune(Khadiki)", "Shirur", "Baramati", 
+        "Nira", "Khed(Chakan)", "Bhor", "Pune(Manjri)", "Indapur(Nimgaon Ketki)", 
+        "Dound", "Indapur", "Mulshi", "Junnar(Narayangaon)", "Indapur(Bhigwan)"
+    ],
+    "Sangli": [
+        "Sangli", "Vita", "Islampur", "Sangli(Miraj)", "Palus", 
+        "Sangli(Phale, Bhajipura Market)", "Tasgaon"
+    ],
+    "Satara": ["Vai", "Satara", "Phaltan", "Vaduj", "Karad", "Koregaon", "Lonand"],
+    "Solapur": [
+        "Akluj", "Laxmi Sopan Agriculture Produce Marketing Co Ltd", "Pandharpur", 
+        "Mangal Wedha", "Mohol", "Kurdwadi(Modnimb)", "Karmala", "Barshi", "Solapur", 
+        "Dudhani", "Akkalkot", "Barshi(Vairag)", "Kurdwadi"
+    ]
+}
+
+# for yield and market price model
+def getMahaAnnualRainfall(year,district):
+    print("request recevived")
+    prompt = f"""Analyze the previous rainfall conditions and pattern in Maharashtra state and predict 
+                the Annual rainfall for year : {year} and district :{district} in maharashtra. 
+                you need to predict the rainfall year and district wise.
+                Output the rainfall in mm. only rainfall value , No any explanation or other text
+                output in json format.
+                ### ouput format :  34.5 
+                """
+    rainfall = get_data(prompt)
+    return rainfall
+
+# for wpi model
+def getIndiaRainfallMonthly(year,month):
+    prompt = f"""Analyze the previous rainfall conditions and pattern in India and predict 
+                the rainfall for year : {year} and month {month} in india. 
+                Output the rainfall in mm. only rainfall value , No any explanation or other text.
+                output in json format.
+                ### ouput format :  154.5 
+                """
+    rainfall = get_data(prompt)
+    return rainfall
+
+# for yield temperature
+def getMahaTemp(year,district):
+    prompt = f"""Analyze the previous temperature conditions and pattern in maharashtra and predict the     
+                temperature for year : {year} and district {district} in maharashtra.  
+                Output the temperature in Celsius.
+                you need to predict the temperature according to year, and district in maharashtra.
+                only temperature value , No any explanation or other text.
+                output in json format.
+                ### ouput format :  25.5 
+                """
+    temperature = get_data(prompt)
+    return temperature
 
 # Gemini in use
 def geminiInUse(cropname):
@@ -125,23 +184,71 @@ def rainfallAndTempreturePrediction(subdivision,year):
 
 
 # yield prediction function
-def yieldPrediction(year, dist, cropname,area,aggregated_rainfall,aggregated_temperature):
-    column_names = ['Year', 'Dist Name', 'Crop','Area(1000 ha)','Total Rainfall','Avg Temp']
-    features = [[year, dist, cropname,area,aggregated_rainfall,aggregated_temperature]]
+def yieldPrediction(Year, District, Commodity, Area, Rainfall, Temperature, Soil_color, Fertilizer, Nitrogen, Phosphorus, Potassium, pH):
+    column_names = ['Year', 'District', 'Commodity', 'Area', 'Rainfall', 'Temperature','Soil_color','Fertilizer', 'Nitrogen', 'Phosphorus', 'Potassium', 'pH']
+    features = [[Year, District, Commodity, Area, Rainfall, Temperature, Soil_color, Fertilizer, Nitrogen, Phosphorus, Potassium, pH]]
     features_df = pd.DataFrame(features, columns=column_names)
     transformed_features = yield_preprocessor.transform(features_df)
     prediction = yield_model.predict(transformed_features).reshape(1,-1)
-    predicted_value = round(prediction[0][0] , 2)
-    return predicted_value
+    predicted_yield = round(prediction[0][0] , 2)
+    return predicted_yield
 
-def pricePrediction(dist,market, cropname,variety,year,month,aggregated_rainfall):
-    column_names = ['District', 'Market', 'Commodity', 'Variety', 'Year', 'Month','Rainfall']
-    features = [[dist,market, cropname,variety,year,month,aggregated_rainfall]]
+# market price
+def marketPricePrediction(District, Market, Commodity, Year, Month, Rainfall):
+    column_names = ['District', 'Market', 'Commodity', 'Year', 'Month','Rainfall']
+    features = [[District, Market, Commodity, Year, Month, Rainfall]]
     features_df = pd.DataFrame(features, columns=column_names)
     transformed_features = market_price_preprocessor.transform(features_df)
     prediction = market_price_model.predict(transformed_features).reshape(1,-1)
-    predicted_value = round(prediction[0][0] , 2)
-    return predicted_value
+    predicted_market_price = round(prediction[0][0] , 2)
+    return predicted_market_price
+
+def marketPriceSeries(District, Commodity, Year, Month):
+    markets = markets_data.get(District, [])  # Use .get() to avoid KeyError
+    marketPriceData = {}
+    
+    Rainfall = getMahaAnnualRainfall(Year, District)
+    
+    for Market in markets:
+        marketPrice = marketPricePrediction(District, Market, Commodity, Year, Month, Rainfall)
+        marketPriceData[Market] = marketPrice  # Correct way to add key-value pair
+    
+    return marketPriceData
+
+# wpi prediction
+def wpiPrediction(Commodity, Month, Year, Rainfall):
+    column_names = ['Commodity','Month','Year','Rainfall']
+    features = [[Commodity, Month, Year, Rainfall]]
+    features_df = pd.DataFrame(features, columns=column_names)
+    transformed_features = wpi_preprocessor.transform(features_df)
+    prediction = wpi_model.predict(transformed_features).reshape(1,-1)
+    predicted_wpi = round(prediction[0][0] , 2)
+    return predicted_wpi
+
+# wpi price calculation
+def wpiPricePrediction(Commodity, Month, Year, Rainfall):
+    wpi = wpiPrediction(Commodity, Month, Year, Rainfall)
+    commodity_avg_price = commodity_price[Commodity]['avg_price']
+    commodity_msp_price = commodity_price[Commodity]['msp_price']
+    min_wpi_price = round((wpi*commodity_avg_price)/100,2)
+    max_wpi_price = round((wpi*commodity_msp_price)/100,2)
+    avg_wpi_price = round((min_wpi_price + max_wpi_price) / 2,2)
+    return min_wpi_price,max_wpi_price,avg_wpi_price
+
+def wpiPriceWholeYear(Commodity,Year):
+    min_price_data = []
+    msp_data = []
+    Month = 1 
+    rainfallData = [1,2,3,1,8,673,1318,779,408,106,44,8]
+    x_count =0 
+    for rainfall in rainfallData:
+        min_wpi_price,max_wpi_price,avg_wpi_price = wpiPricePrediction(Commodity,Month,Year,rainfall)
+        msp_data.append(max_wpi_price)
+        min_price_data.append(min_wpi_price)
+        Month = Month + 1
+        x_count = x_count + 1
+    return min_price_data,msp_data
+
 
 
 @app.route('/')
@@ -150,62 +257,123 @@ def index():
 
 
 @app.route('/intel-market-price',methods=['POST'])
-def resultprice():
-    cropname = request.form['cropname']
-    year = int(request.form['year'])
-    dist = request.form['dist']
-    month = request.form['month']
-    # state = request.form['state']
-    market = request.form['market']
-    variety = request.form['variety']
-    subdivision = "Madhya Maharashtra"
-    # current year rainfall and temperature prediction
-    aggregated_rainfall,curr_aggregated_temperature = rainfallAndTempreturePrediction(subdivision,year)
-    predicted_price = pricePrediction(dist,market, cropname,variety,year,month,aggregated_rainfall)
-    return jsonify({'predicted_price':predicted_price})
+def marketPrice():
+    data = request.get_json()
+    Commodity = data.get('commodity')
+    Year = data.get('year')
+    Month = data.get('month')
+    District = data.get('district')
+    marketPriceData = marketPriceSeries(District, Commodity, Year, Month)
+    print(marketPriceData)
+    return jsonify(marketPriceData)
 
-
-# result route
-@app.route('/intel-yield',methods=['POST'])
-def result():
+@app.route('/intel-wpi-price',methods=['POST'])
+def IntelWPI():
     if request.method == 'POST':
-        cropname = request.form['cropname']
-        year = int(request.form['year'])
-        dist = request.form['dist']
-        season = request.form['season']
-        state = request.form['state']
-        subdivision = request.form['subdivision']
-        area = float(request.form['area'])
-        fp_per_unit_area = float(request.form['fp_per_unit_area'])
+        data = request.get_json()
+        Commodity = data.get('commodity')
+        Year = data.get('year')
+        Month = data.get('month')
         
-        # current year rainfall and temperature prediction
-        curr_aggregated_rainfall,curr_aggregated_temperature = rainfallAndTempreturePrediction(subdivision,year)
-        # current year crop yield
-        curr_year_prediction = yieldPrediction(year, dist, cropname,area,curr_aggregated_rainfall,curr_aggregated_temperature)
-        # current year crop yield in tonnes
-        curr_year_prediction_tonnes = round(curr_year_prediction/1000,2)
+        Year = int(Year)
+        Month = int(Month)
         
-        # Gemini In Use
-        market_data,goverment_data = geminiInUse(cropname)
+        Rainfall = getIndiaRainfallMonthly(Year,Month)
+        
+        avgPrice,minPrice,maxPrice = wpiPricePrediction(Commodity,Month,Year,Rainfall)
+        
+        minPriceCurrSeries,maxPriceCurrSeries = wpiPriceWholeYear(Commodity,Year)
+        minPriceNextSeries,maxPriceNextSeries = wpiPriceWholeYear(Commodity,Year+1)
+        
+        maxMSPPrice = max(maxPriceCurrSeries)
+        maxAvgPrice = max(minPriceCurrSeries)
+        minMSPPrice = min(maxPriceCurrSeries)
+        minAvgPrice = min(minPriceCurrSeries)
+
+        goldMonthIndex = maxPriceCurrSeries.index(maxMSPPrice) + 1
+        silverMonthIndex = maxPriceCurrSeries.index(minMSPPrice) + 1
         
         return jsonify({
-    'curr_year_prediction': curr_year_prediction,
-    'cropface' : crop_images.get(cropname),
-    'cropname': cropname,
-    'state': state,
-    'dist': dist,
-    'subdivision': subdivision,
-    'area': area,
-    'average_rain_fall': curr_aggregated_rainfall,
-    'temperature': curr_aggregated_temperature,
-    'fp_per_unit_area': fp_per_unit_area,
-    'year': year,
-    'season': season,
-    'curr_year_prediction_tonnes': curr_year_prediction_tonnes,
-    'market_data': market_data,
-    'goverment_data': goverment_data
-})
+            'rainfall':Rainfall,
+            'year':Year,
+            'month':Month,
+            'avgPrice':avgPrice,
+            'minPrice':minPrice,
+            'maxPrice':maxPrice,
+            'minPriceCurrSeries':minPriceCurrSeries,
+            'maxPriceCurrSeries':maxPriceCurrSeries,
+            'minPriceNextSeries':minPriceNextSeries,
+            'maxPriceNextSeries':maxPriceNextSeries,
+            'maxMSPPrice':maxMSPPrice,
+            'maxAvgPrice':maxAvgPrice,
+            'minMSPPrice':minMSPPrice,
+            'minAvgPrice':minAvgPrice,
+            'goldMonthIndex':goldMonthIndex,
+            'silverMonthIndex':silverMonthIndex,
+        })
+        
+        
+# result route
+@app.route('/intel-yield',methods=['POST'])
+def IntelYield():
+    print("Yield Prediction Call recevied")
+    if request.method == 'POST':
+        data = request.get_json()
+        Commodity = data.get('commodity')
+        Year = data.get('year')
+        District = data.get('district')
+        Area = data.get('area')
+        Soil_color = data.get('soilColor')
+        Fertilizer = data.get('fertilizer')
+        Nitrogen = data.get('nitrogen')
+        Phosphorus = data.get('phosphorus')
+        Potassium = data.get('potassium')
+        pH = data.get('pH')
 
+        if not all([Commodity, Year, District, Area, Soil_color, Fertilizer, Nitrogen, Phosphorus, Potassium, pH]):
+            return jsonify({"error": "All fields are required"}), 400
+
+        try:
+            Year = int(Year)
+            # Month = int(Month)
+            Area = float(Area)
+            Nitrogen = float(Nitrogen)
+            Phosphorus = float(Phosphorus)
+            Potassium = float(Potassium)
+            pH = float(pH)
+        except ValueError:
+            print("Error data conversion")
+            return jsonify({"error": "Invalid input format for numbers"}), 400
+
+      
+        # current year rainfall and temperature prediction
+        Rainfall = getMahaAnnualRainfall(Year,District)
+        Temperature = getMahaTemp(Year,District)
+        print(Rainfall)
+        print(Temperature)
+        # current year crop yield
+        yield_prediction = yieldPrediction(Year, District, Commodity, Area, Rainfall, Temperature, Soil_color, Fertilizer, Nitrogen, Phosphorus, Potassium, pH)
+        # current year crop yield in tonnes
+        yield_prediction_tonnes = round(yield_prediction/10,2)
+        
+        # Gemini In Use
+        market_data,goverment_data = geminiInUse(Commodity)
+        
+        print("Yield Prediction Call Posted")
+        return jsonify({
+            'yieldPrediction': yield_prediction,
+            'yieldPredictionTonnes': yield_prediction_tonnes,
+            'commodity': Commodity,
+            'state': "Maharashtra",
+            'district': District,
+            'area': Area,
+            'rainfall': Rainfall,
+            'temperature': Temperature,
+            'year': Year,
+            'marketData': market_data,
+            'governmentData': goverment_data
+        })
+    return jsonify("ok")
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
