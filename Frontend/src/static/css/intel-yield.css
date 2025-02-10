@@ -1,0 +1,115 @@
+.intel-yield-root{
+    width:100vw;
+    box-sizing: border-box;
+    background-color:rgb(22, 62, 4);
+    min-height:100vh;
+}
+
+.intel-price-nav{
+    width:100%;
+    height:10vh;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    grid-template-rows: auto;
+    grid-column: auto;
+    grid-row: auto;
+    gap:2rem;
+    border-bottom: 3px solid darkgreen;
+}
+
+.intel-header-logotext{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font: 700;
+    font-size:25px;
+    font-weight: 700;
+    color: white;
+    font-stretch: condensed;
+}
+
+.intel-header-logotext i{
+    font-size:20px;
+    padding:0px 0.5rem;
+}
+
+.intel-header-content{
+    display: flex;
+    align-items: center;
+    justify-content:space-around;
+    /* border: 1px solid white; */
+}
+
+.intel-header-content a{
+    text-decoration: none;
+    border-radius:5px;
+    padding:0.5rem 1rem;
+    background-color:rgba(20, 40, 27, 0.5);
+}
+
+.intel-header-content a:hover{
+    text-decoration: underline;
+}
+
+.main-yield-form_block{
+    width:90%;
+    margin: auto;
+    margin-top:5rem;
+    height:max-content;
+    /* border:1px solid white; */
+}
+.sub-yield-form-block{
+    display: grid;
+    grid-template-columns:1fr 1fr 1fr;
+    grid-template-rows: auto;
+    grid-column: auto;
+    grid-row: auto;
+    gap: 5rem 3rem;
+}
+
+.yield-formcontent{
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    color: white;
+}
+
+.yield-formcontent label{
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.yield-formcontent select,input{
+    width:80%;
+    box-sizing: border-box;
+    padding:0.5rem 1rem;
+    margin-left:0.5rem;
+    border-radius:5px;
+    outline: none;
+    border:1px solid rgb(3, 98, 14);
+    cursor: pointer;
+}
+
+.btn-block{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top:10vh;
+}
+
+.submitbtn{
+    cursor: pointer;
+    padding:0.5rem 1.5rem;
+    font-size:18px;
+    font-weight: 600;
+    border:1px solid rgb(5, 112, 36);
+    background-color:rgb(255, 255, 255);
+    color:rgb(22, 62, 4);
+    border-radius:5px;
+}
+
+.submitbtn:hover{
+    background-color:green;
+    color: white;
+}

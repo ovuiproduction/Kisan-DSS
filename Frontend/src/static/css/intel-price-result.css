@@ -1,0 +1,175 @@
+.intel-price-result-root{
+    padding:0px;
+    margin:0px;
+    background-color: azure;
+    /* border-bottom:5vh solid green; */
+}
+.intel-price-result-nav{
+    display: flex;
+    align-items: center;
+    padding:0px;
+    margin: 0px;
+    width:100%;
+    height:70px;
+    background-color:green;
+}
+.intel-price-result-nav a{
+    margin-left:90px;
+    color:white;
+    font-size:25px;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    font-weight: 700;
+    text-decoration: none;
+}
+.intel-price-result-nav a:hover{
+    color:rgb(15, 47, 12);
+}
+
+.date{
+    width:90%;
+    margin:30px auto auto auto;
+    font-size:30px;
+    font-weight:600;
+    color:blueviolet;
+}
+
+.commoditycontainer{
+    display: flex;
+    margin:2rem auto auto auto;
+    width:90%;
+    height:70vh;
+    column-gap:50px;
+}
+
+.commodityimg{
+    /* border:1px solid black; */
+    width:25%;
+    height:100%;
+}
+.commodityimg img{
+    width:100%;
+    height:100%;
+    border-radius:10px;
+    /* padding:20px; */
+}
+.currcommoditystatistics{
+    width:35%;
+    height:100%;
+    display: flex;
+    align-items: left;
+    justify-content:space-evenly;
+    flex-direction: column;
+    background-color: rgba(215, 209, 219, 0.2);
+}
+.currcommoditystatistics{
+    color:blueviolet;
+}
+
+.currcommoditystatistics h2{
+    margin:0px;
+    padding:0px;
+    text-align: left;
+    margin-left: 50px;
+}
+.currAvgprice{
+    margin-left:50px;
+    font-size:20px;
+    font-family: sans-serif;
+    font-weight: 600;
+    /* color: blueviolet; */
+    width:100%;
+    /* height:20%; */
+    /* margin-bottom:40px; */
+}
+.minprice{
+    margin-left:50px;
+    font-size:20px;
+    font-family: sans-serif;
+    font-weight: 600;
+    /* color: blueviolet; */
+    /* background-color:rgba(226, 101, 43, 0.2); */
+    width:100%;
+    /* height:20%; */
+    /* margin-bottom:40px; */
+}
+.maxprice{
+    margin-left:50px;
+    font-size:20px;
+    font-family: sans-serif;
+    font-weight: 600;
+    /* color: blueviolet; */
+    /* background-color:rgba(43, 226, 52, 0.2); */
+    width:100%;
+    /* height:20%; */
+}
+.maxminyear{
+    width:30%;
+    height:100%;
+    /* border: 1px solid black; */
+}
+.type{
+    padding:0px;
+    margin:0px;
+    margin-left:30px;
+}
+
+.max{
+    margin-top:0px;
+    font-family: sans-serif;
+    font-weight: 600;
+    font-size:15px;
+    width:80%;
+    margin-left:30px;
+    background-color:rgba(182, 220, 144, 0.5);
+}
+.max p{
+    padding:10px;
+}
+.min{
+    font-family: sans-serif;
+    font-weight: 600;
+    font-size:15px;
+    width:80%;
+    margin-left:30px;
+    background-color:rgba(227, 165, 165, 0.5); 
+}
+.min p{
+    padding:10px;
+}
+.condition{
+    margin-left:30px;
+    width:80%;
+    color:gray;
+}
+.prevyeargraph{
+    margin:50px auto auto auto;
+    width:80%;
+    height:max-content;
+    color: blueviolet;
+    /* border: 1px solid black; */
+}
+.graph-canvas{
+    height:60vh;
+    margin:0px;
+    padding:0px;
+    /* border: 1px solid red; */
+}
+.prevyeargraph h2{
+    background-color:green;
+    color: white;
+    padding:1rem;
+    margin-bottom:2rem;
+}
+
+.price-result-footer{
+    width:100%;
+    height:6vh;
+    background-color: green;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size:18px;
+    font-weight: 500;
+    margin-top:5rem;
+}
