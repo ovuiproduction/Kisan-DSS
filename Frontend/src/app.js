@@ -10,6 +10,8 @@ import IntelMarketPrice from './components/IntelMarketPrice';
 import IntelPriceResult from "./components/IntelPriceResult";
 import IntelYieldResult from "./components/IntelYieldResult";
 import IntelCropRecResult from './components/IntelCropRecResult';
+import IntelMarketResult from './components/IntelMarketResult';
+import IntelAgriVideoSearch from './components/IntelAgriVideoSearch';
 
 export default function App() {
   return (
@@ -22,8 +24,10 @@ export default function App() {
         <Route path="/intel-crop-yield" element={<IntelYield />} />
         <Route path="/intel-yield-result" element={<IntelYieldResult />} />
         <Route path="/intel-crop-recommendation" element={<IntelCropRec />} />
-        <Route path="/intel-crop-recommendation/result" element={<IntelCropRecResult />} />
+        <Route path="/intel-crop-rec-result" element={<IntelCropRecResult />} />
         <Route path="/intel-market-selection" element={<IntelMarketPrice />} />
+        <Route path="/intel-market-selection-result" element={<IntelMarketResult />} />
+        <Route path="/intel-agri-video-search" element={<IntelAgriVideoSearch />} />
       </Routes>
     </Router>
   );

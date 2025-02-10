@@ -6,7 +6,8 @@
 }
 
 .intel-price-nav{
-    width:100%;
+    width:100vw;
+    box-sizing: border-box;
     height:10vh;
     /* border: 1px solid rgb(255, 255, 255); */
     display:grid;
@@ -14,7 +15,7 @@
     grid-template-rows: auto;
     grid-column: auto;
     grid-row: auto;
-    gap:2rem;
+    gap:1rem;
     border-bottom: 3px solid darkgreen;
 }
 

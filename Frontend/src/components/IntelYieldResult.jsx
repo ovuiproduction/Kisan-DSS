@@ -4,25 +4,41 @@ import "../static/css/intel-yield-result.css";
 
 import CropImages from "./CropImages";
 
+import Bajra from "../static/CropImages/Bajra.jpg";
+import Barley from "../static/CropImages/Barley.jpg";
+import Cotton from "../static/CropImages/Cotton.jpg";
+import Gram from "../static/CropImages/Gram.jpg";
+import Groundnut from "../static/CropImages/Groundnut.jpg";
+import Jowar from "../static/CropImages/Jowar.jpg";
+import Maize from "../static/CropImages/Maize.jpg";
+import Masoor from "../static/CropImages/Masoor.jpg";
+import Moong from "../static/CropImages/Moong.jpg";
+import Soyabean from "../static/CropImages/Soyabean.jpg";
+import Sugarcane from "../static/CropImages/Sugarcane.jpg";
+import Tur from "../static/CropImages/Tur.jpg";
+import Urad from "../static/CropImages/Urad.jpg";
+import Wheat from "../static/CropImages/Wheat.jpg";
+
 export default function IntelYieldResult() {
   const location = useLocation();
   const { state } = location;
-  // const CropImages = {
-  //   Bajra: require("../static/CropImages/Bajra.jpg"),
-  //   Barley: require("../static/CropImages/Barley.jpg"),
-  //   Cotton: require("../static/CropImages/Cotton.jpg"),
-  //   Gram: require("../static/CropImages/Gram.jpg"),
-  //   Groundnut: require("../static/CropImages/Groundnut.jpg"),
-  //   Jowar: require("../static/CropImages/Jowar.jpg"),
-  //   Maize: require("../static/CropImages/Maize.jpg"),
-  //   Masoor: require("../static/CropImages/Masoor.jpg"),
-  //   Moong: require("../static/CropImages/Moong.jpg"),
-  //   Soyabean: require("../static/CropImages/Soyabean.jpg"),
-  //   Sugarcane: require("../static/CropImages/Sugarcane.jpg"),
-  //   Tur: require("../static/CropImages/Tur.jpg"),
-  //   Urad: require("../static/CropImages/Urad.jpg"),
-  //   Wheat: require("../static/CropImages/Wheat.jpg"),
-  // };
+
+  const commodityImages = {
+    Bajra: Bajra,
+    Barley: Barley,
+    Cotton: Cotton,
+    Gram: Gram,
+    Groundnut: Groundnut,
+    Jowar: Jowar,
+    Maize: Maize,
+    Masoor: Masoor,
+    Moong: Moong,
+    Soyabean: Soyabean,
+    Sugarcane: Sugarcane,
+    Tur: Tur,
+    Urad: Urad,
+    Wheat: Wheat,
+  };
 
   if (!state) {
     return <div>No data received!</div>;
@@ -39,17 +55,16 @@ export default function IntelYieldResult() {
 
       {/* Date Section */}
       <div className="section-header">
-        <h2>{state.year}</h2>
+        <h2>{state.year} - {state.commodity}</h2>
       </div>
 
       {/* Main Container */}
       <div className="commodity-container">
         <div id="cropimg" className="commodity-img">
-          <img src={CropImages[state.commodity]} alt="Crop" />
+          <img src={commodityImages[state.commodity]} alt="Crop" />
         </div>
 
         <div className="form-details-block">
-          <div className="cropname-block">{state.commodity}</div>
           <div className="info-block">
             <InfoItem label="Dist" value={state.state} />
             <InfoItem label="Dist" value={state.district} />

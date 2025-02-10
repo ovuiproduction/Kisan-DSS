@@ -46,7 +46,9 @@
     background-color: #fff;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    height:70vh;
+    height:max-content;
+    padding:2rem 1rem;
+    /* margin-bottom:5vh; */
 }
 
 .market-guide-container{
@@ -58,6 +60,7 @@
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     height:max-content;
+    padding:1rem;
     /* margin-bottom:10vh; */
     /* border: 1px solid black; */
 }
@@ -105,7 +108,7 @@
 }
 .commodity-img{
     width:30%;
-    height:90%;
+    height:70vh;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -168,10 +171,10 @@
     font-size:15px;
     font-family:Arial, Helvetica, sans-serif;
     font-weight: 500;
+    padding:1.5rem;
 }
 .info-item p{
     color:rgb(126, 125, 125);
-    padding:0px;
     margin:0px;
 }
 .value{
@@ -205,6 +208,7 @@
     align-items: center;
     justify-content:space-evenly;
     transition: transform 0.5s ease;
+    margin-bottom:2rem;
 }
 
 .stat-card p{

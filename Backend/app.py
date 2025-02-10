@@ -140,6 +140,44 @@ def getMahaTemp(year,district):
     temperature = get_data(prompt)
     return temperature
 
+def getCropSelectionConclusion(IntelCropData,Nitrogen,Potassium,Phosphorus,soilColor,pH):
+    Prompt = f"""
+        You are an expert in crop selection. I will provide you with data that includes:
+        The expected total price and yield for various crops.
+        Meteorological and soil data relevant to crop growth.
+        Based on this data, suggest the most profitable crop that is also suitable for the given soil conditions.
+        In output only suggested crop and reasoning no any desclaimers.
+        Output Format: JSON 
+        suggested_crop
+        reasoning
+        
+        Price and yield data : {IntelCropData},
+        Nitrogen : {Nitrogen},
+        Potassium : {Potassium},
+        Phosphorus : {Phosphorus},
+        soilColor : {soilColor},
+        pH : {pH}
+    """
+    data = get_data(Prompt)
+    return data
+
+def getMarketSelectionConclusion(MarketData,sourceDistrict):
+    Prompt = f"""
+            You are expert in market selection i will provide you the market and the crop prices in that market.
+            your job is to guide the farmer to decide the market which gives highest profit.
+            On the basis of crop price in that market.
+            In output no any desclaimers.
+            
+            output format : JSON
+            suggested_market
+            reasoning
+            
+            marketData : {MarketData}
+            sourceDistrict : {sourceDistrict}
+    """
+    data = get_data(Prompt)
+    return data
+
 # Gemini in use
 def geminiInUse(cropname):
     # Market Info
@@ -249,6 +287,25 @@ def wpiPriceWholeYear(Commodity,Year):
         x_count = x_count + 1
     return min_price_data,msp_data
 
+def getIntelCropData(Commoditys, Year, Month, District, Area, Nitrogen, Potassium, Phosphorus, Fertilizer, soilColor, pH):
+    wpi_Rainfall = getIndiaRainfallMonthly(Year, Month)
+    Rainfall = getMahaAnnualRainfall(Year, District)
+    Temperature = getMahaTemp(Year, District)
+    IntelCroprecData = {}
+
+    for Commodity in Commoditys:
+        min_wpi_price, max_wpi_price, predicted_price = wpiPricePrediction(Commodity, Month, Year, wpi_Rainfall)
+        predicted_yield = yieldPrediction(Year, District, Commodity, Area, Rainfall, Temperature, soilColor, Fertilizer, Nitrogen, Phosphorus, Potassium, pH)
+        totalPrice = round((predicted_yield*Area*predicted_price), 2)
+        
+        # Corrected dictionary assignment
+        IntelCroprecData[Commodity] = {
+            "predicted_price": predicted_price,
+            "predicted_yield": predicted_yield,
+            "area":Area,
+            "totalPrice": totalPrice
+        }
+    return IntelCroprecData
 
 
 @app.route('/')
@@ -263,9 +320,10 @@ def marketPrice():
     Year = data.get('year')
     Month = data.get('month')
     District = data.get('district')
+    sourceDistrict = data.get('sourceDistrict')
     marketPriceData = marketPriceSeries(District, Commodity, Year, Month)
-    print(marketPriceData)
-    return jsonify(marketPriceData)
+    conclusion = getMarketSelectionConclusion(marketPriceData,sourceDistrict)
+    return jsonify({'data':marketPriceData,'conclusion':conclusion})
 
 @app.route('/intel-wpi-price',methods=['POST'])
 def IntelWPI():
@@ -295,6 +353,7 @@ def IntelWPI():
         
         return jsonify({
             'rainfall':Rainfall,
+            'commodity':Commodity,
             'year':Year,
             'month':Month,
             'avgPrice':avgPrice,
@@ -313,10 +372,40 @@ def IntelWPI():
         })
         
         
+@app.route('/intel-crop-recommendation',methods=['POST'])
+def IntelCropRec():
+    if request.method == 'POST':
+        data = request.get_json()
+        Commoditys = data.get('crops')
+        Year = data.get('year')
+        Month = data.get('month')
+        District = data.get('district')
+        Area = data.get('area')
+        Fertilizer = data.get('fertilizer')
+        Nitrogen = data.get('nitrogen')
+        Phosphorus = data.get('phosphorus')
+        Potassium = data.get('potassium')
+        pH = data.get('pH')
+        soilColor  = data.get("soilColor")
+        try:
+            Year = int(Year)
+            Month = int(Month)
+            Area = float(Area)
+            Nitrogen = float(Nitrogen)
+            Phosphorus = float(Phosphorus)
+            Potassium = float(Potassium)
+            pH = float(pH)
+        except ValueError:
+            print("Error data conversion")
+            return jsonify({"error": "Invalid input format for numbers"}), 400
+
+        IntelCropData = getIntelCropData(Commoditys,Year,Month,District,Area,Nitrogen,Potassium,Phosphorus,Fertilizer,soilColor,pH)
+        conclusion = getCropSelectionConclusion(IntelCropData,Nitrogen,Potassium,Phosphorus,soilColor,pH)
+        return jsonify({'data':IntelCropData,'conclusion':conclusion})
+    
 # result route
 @app.route('/intel-yield',methods=['POST'])
 def IntelYield():
-    print("Yield Prediction Call recevied")
     if request.method == 'POST':
         data = request.get_json()
         Commodity = data.get('commodity')
@@ -349,8 +438,6 @@ def IntelYield():
         # current year rainfall and temperature prediction
         Rainfall = getMahaAnnualRainfall(Year,District)
         Temperature = getMahaTemp(Year,District)
-        print(Rainfall)
-        print(Temperature)
         # current year crop yield
         yield_prediction = yieldPrediction(Year, District, Commodity, Area, Rainfall, Temperature, Soil_color, Fertilizer, Nitrogen, Phosphorus, Potassium, pH)
         # current year crop yield in tonnes
@@ -358,8 +445,7 @@ def IntelYield():
         
         # Gemini In Use
         market_data,goverment_data = geminiInUse(Commodity)
-        
-        print("Yield Prediction Call Posted")
+
         return jsonify({
             'yieldPrediction': yield_prediction,
             'yieldPredictionTonnes': yield_prediction_tonnes,
@@ -373,7 +459,6 @@ def IntelYield():
             'marketData': market_data,
             'governmentData': goverment_data
         })
-    return jsonify("ok")
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)

@@ -63,7 +63,7 @@ export default function Home() {
           </a>
         </div>
         <div className="nav-2">
-          <a href="#">Farm Guide</a>
+          <a href="/intel-agri-video-search">Farm Guide</a>
         </div>
         <div className="nav-2">
           <a href="">contact</a>

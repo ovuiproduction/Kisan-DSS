@@ -1,10 +1,25 @@
-import React,{useState} from "react";
-
+import React, { useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import "../static/css/intel-crop-rec.css";
 
 export default function IntelCropRec() {
   const [input, setInput] = useState(""); // To manage the input field value
   const [crops, setCrops] = useState([]); // To store the list of crops
+  const [year, setYear] = useState(""); // To manage the year input
+  const [month, setMonth] = useState(""); // To manage the month select
+  const [district, setDistrict] = useState(""); // To manage the district select
+  const [area, setArea] = useState(""); // To manage the cultivation area
+  const [fertilizer, setFertilizer] = useState(""); // To manage the fertilizer select
+  const [nitrogen, setNitrogen] = useState(""); // To manage nitrogen input
+  const [phosphorus, setPhosphorus] = useState(""); // To manage phosphorus input
+  const [potassium, setPotassium] = useState("");
+  const [pH, setPH] = useState("");
+  const [soilColor, setSoilColor] = useState("");
+
+  const [loading, setLoading] = useState(false); // To manage the loading state
+
+  const navigate = useNavigate();
 
   const handleInputChange = (e) => {
     setInput(e.target.value); // Update the input field value
@@ -23,17 +38,59 @@ export default function IntelCropRec() {
     // Remove crop from the list when clicked
     setCrops(crops.filter((crop, i) => i !== index));
   };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true); // Start loading
+
+    const formData = {
+      crops,
+      year,
+      month,
+      district,
+      area,
+      fertilizer,
+      nitrogen,
+      phosphorus,
+      potassium,
+      pH,
+      soilColor,
+    };
+
+    try {
+      // Send the data to the server
+      const response = await axios.post(
+        "http://localhost:5000/intel-crop-recommendation",
+        formData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      console.log("Response from server:", response.data);
+      const data = response.data;
+      console.log(data)
+      navigate('/intel-crop-rec-result',{state:data})
+      // Handle the response from the server if necessary
+    } catch (error) {
+      console.error("Error sending data to the server:", error);
+    } finally {
+      setLoading(false); // Stop loading
+    }
+  };
+
   return (
     <div className="intel-crop-rec-root">
       <nav className="intel-price-nav">
-        <div class="intel-header-logotext">
+        <div className="intel-header-logotext">
           Intel Crop Rec &ndash; <i>Sow for profit</i>
         </div>
-        <div class="intel-header-content">
+        <div className="intel-header-content">
           <a href="/home">Home</a>
           <a href="/home">Kisan Guide</a>
           <a href="/home">Help</a>
-          <a href="">contact</a>
+          <a href="">Contact</a>
         </div>
       </nav>
       <div className="input-crop-list-block">
@@ -55,27 +112,41 @@ export default function IntelCropRec() {
           type="text"
           className="input-crop-list"
           value={input}
+          list="crop_list"
           onChange={handleInputChange}
           onKeyDown={handleKeyPress} // Listen for Enter key press
           placeholder="Enter crop name and press Enter"
         />
+        <datalist id="crop_list">
+          <option value="Jowar">Jowar</option>
+          <option value="Bajra">Bajra</option>
+          <option value="Sugarcane">Sugarcane</option>
+          <option value="Maize">Maize</option>
+          <option value="Cotton">Cotton</option>
+        </datalist>
       </div>
-      <div class="main-crop-rec-form_block">
-        <form>
-          <div class="sub-yield-form-block">
-            <div class="yield-formcontent">
-              <label for="year">Year : </label>
+      <div className="main-crop-rec-form_block">
+        <form onSubmit={handleSubmit}>
+          <div className="sub-yield-form-block">
+            <div className="yield-formcontent">
+              <label htmlFor="year">Year : </label>
               <input
                 className="intel-price-input"
                 type="text"
+                value={year}
+                onChange={(e) => setYear(e.target.value)}
                 placeholder="Enter year"
                 min="1"
               />
             </div>
 
-            <div class="yield-formcontent">
-              <label for="month">Select Month : </label>
-              <select className="intel-price-input">
+            <div className="yield-formcontent">
+              <label htmlFor="month">Select Month : </label>
+              <select
+                className="intel-price-input"
+                value={month}
+                onChange={(e) => setMonth(e.target.value)}
+              >
                 <option value="">Select Month</option>
                 <option value="1">1 - January</option>
                 <option value="2">2 - February</option>
@@ -93,8 +164,11 @@ export default function IntelCropRec() {
             </div>
 
             <div className="yield-formcontent">
-              <label for="district">Select District : </label>
-              <select>
+              <label htmlFor="district">Select District : </label>
+              <select
+                value={district}
+                onChange={(e) => setDistrict(e.target.value)}
+              >
                 <option value="">Select District</option>
                 <option value="Kolhapur">Kolhapur</option>
                 <option value="Pune">Pune</option>
@@ -104,17 +178,43 @@ export default function IntelCropRec() {
               </select>
             </div>
             <div className="yield-formcontent">
-              <label for="area">Cultivation Area : </label>
+              <label htmlFor="area">Cultivation Area : </label>
               <input
                 className="intel-price-input"
                 type="number"
-                placeholder="Enter Area in hecter"
+                value={area}
+                onChange={(e) => setArea(e.target.value)}
+                placeholder="Enter Area in hectare"
                 min="0"
+                 step="0.01"
               />
             </div>
             <div className="yield-formcontent">
-              <label for="fertilizer">Select Fertilizer :</label>
-              <select id="fertilizer" name="fertilizer">
+              <label htmlFor="soilColor">Soil Color:</label>
+              <select
+                id="soilColor"
+                name="soilColor"
+                className="intel-price-input"
+                value={soilColor}
+                onChange={(e) => setSoilColor(e.target.value)}
+              >
+                <option value="">Select Soil Color</option>
+                <option value="Medium Brown">Medium Brown</option>
+                <option value="Black">Black</option>
+                <option value="Dark Brown">Dark Brown</option>
+                <option value="Red">Red</option>
+                <option value="Reddish Brown">Reddish Brown</option>
+                <option value="Light Brown">Light Brown</option>
+              </select>
+            </div>
+            <div className="yield-formcontent">
+              <label htmlFor="fertilizer">Select Fertilizer :</label>
+              <select
+                id="fertilizer"
+                name="fertilizer"
+                value={fertilizer}
+                onChange={(e) => setFertilizer(e.target.value)}
+              >
                 <option value="">Select Fertilizer</option>
                 <option value="Urea">Urea</option>
                 <option value="10:26:26 NPK">10:26:26 NPK</option>
@@ -133,38 +233,60 @@ export default function IntelCropRec() {
             </div>
 
             <div className="yield-formcontent">
-              <label for="Nitrogen">Nitrogen : </label>
+              <label htmlFor="Nitrogen">Nitrogen : </label>
               <input
                 className="intel-price-input"
                 type="number"
+                value={nitrogen}
+                onChange={(e) => setNitrogen(e.target.value)}
                 placeholder="Enter Nitrogen"
                 min="0"
+                 step="0.01"
               />
             </div>
             <div className="yield-formcontent">
-              <label for="Phosphorus">Phosphorus : </label>
+              <label htmlFor="Phosphorus">Phosphorus : </label>
               <input
                 className="intel-price-input"
                 type="number"
+                value={phosphorus}
+                onChange={(e) => setPhosphorus(e.target.value)}
                 placeholder="Enter Phosphorus"
                 min="0"
+                 step="0.01"
               />
             </div>
             <div className="yield-formcontent">
-              <label for="Potassium">Potassium : </label>
+              <label htmlFor="Potassium">Potassium : </label>
               <input
                 className="intel-price-input"
                 type="number"
+                value={potassium}
+                onChange={(e) => setPotassium(e.target.value)}
                 placeholder="Enter Potassium"
                 min="0"
+                 step="0.01"
+              />
+            </div>
+            <div className="yield-formcontent">
+              <label htmlFor="pH">pH : </label>
+              <input
+                name="pH"
+                className="intel-price-input"
+                type="number"
+                placeholder="Enter pH"
+                min="0"
+                step="0.01"
+                value={pH}
+                onChange={(e) => setPH(e.target.value)}
               />
             </div>
           </div>
-          <div class="btn-block">
-            <button id="predict_btn" class="submitbtn">
+          <div className="btn-block">
+            <button id="predict_btn" className="submitbtn" type="submit">
               Submit
             </button>
-            <div id="loader" class="loader"></div>
+            {loading && <div id="loader" className="loader"></div>}
           </div>
         </form>
       </div>

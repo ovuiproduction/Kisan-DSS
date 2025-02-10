@@ -5,30 +5,42 @@ import "chart.js/auto";
 
 import "../static/css/intel-price-result.css";
 
-// import CropImages from "./CropImages";
+import Bajra from "../static/CropImages/Bajra.jpg";
+import Barley from "../static/CropImages/Barley.jpg";
+import Cotton from "../static/CropImages/Cotton.jpg";
+import Gram from "../static/CropImages/Gram.jpg";
+import Groundnut from "../static/CropImages/Groundnut.jpg";
+import Jowar from "../static/CropImages/Jowar.jpg";
+import Maize from "../static/CropImages/Maize.jpg";
+import Masoor from "../static/CropImages/Masoor.jpg";
+import Moong from "../static/CropImages/Moong.jpg";
+import Soyabean from "../static/CropImages/Soyabean.jpg";
+import Sugarcane from "../static/CropImages/Sugarcane.jpg";
+import Tur from "../static/CropImages/Tur.jpg";
+import Urad from "../static/CropImages/Urad.jpg";
+import Wheat from "../static/CropImages/Wheat.jpg";
 
 export default function IntelPriceResult() {
   const location = useLocation()
   const {state} = location;
   console.log(state)
 
-  const CropImages = {
-    Bajra: require("../static/CropImages/Bajra.jpg"),
-    Barley: require("../static/CropImages/Barley.jpg"),
-    Cotton: require("../static/CropImages/Cotton.jpg"),
-    Gram: require("../static/CropImages/Gram.jpg"),
-    Groundnut: require("../static/CropImages/Groundnut.jpg"),
-    Jowar: require("../static/CropImages/Jowar.jpg"),
-    Maize: require("../static/CropImages/Maize.jpg"),
-    Masoor: require("../static/CropImages/Masoor.jpg"),
-    Moong: require("../static/CropImages/Moong.jpg"),
-    Soyabean: require("../static/CropImages/Soyabean.jpg"),
-    Sugarcane: require("../static/CropImages/Sugarcane.jpg"),
-    Tur: require("../static/CropImages/Tur.jpg"),
-    Urad: require("../static/CropImages/Urad.jpg"),
-    Wheat: require("../static/CropImages/Wheat.jpg"),
+  const commodityImages = {
+    Bajra: Bajra,
+    Barley: Barley,
+    Cotton: Cotton,
+    Gram: Gram,
+    Groundnut: Groundnut,
+    Jowar: Jowar,
+    Maize: Maize,
+    Masoor: Masoor,
+    Moong: Moong,
+    Soyabean: Soyabean,
+    Sugarcane: Sugarcane,
+    Tur: Tur,
+    Urad: Urad,
+    Wheat: Wheat,
   };
-  
 
   const chartData = (labels, maxData, minData) => ({
     labels,
@@ -66,7 +78,7 @@ export default function IntelPriceResult() {
       <div className="date">{state.month} / {state.year}</div>
       <div className="commoditycontainer">
         <div id="cropimg" className="commodityimg">
-          <img src={CropImages[state.commodity]} alt="Crop" />
+          <img src={commodityImages[state.commodity]} alt="Crop" />
         </div>
         <div className="currcommoditystatistics">
           {state.avgPrice && state.minPrice && state.maxPrice && (
