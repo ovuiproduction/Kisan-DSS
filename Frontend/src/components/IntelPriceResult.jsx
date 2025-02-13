@@ -123,7 +123,7 @@ export default function IntelPriceResult() {
       </div>
 
       <div className="prevyeargraph">
-        <h2>Price Analysis of Upcoming Year - {state.NextYear}</h2>
+        <h2>Price Analysis of Upcoming Year - {state.year+1}</h2>
         <div  className="graph-canvas" >
         <Line data={chartData(["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"], state.maxPriceNextSeries, state.minPriceNextSeries)} options={options} />
         </div>

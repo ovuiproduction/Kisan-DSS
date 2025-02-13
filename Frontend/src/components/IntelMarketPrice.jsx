@@ -53,6 +53,7 @@ export default function IntelMarketPrice() {
     }
   };
 
+
   return (
     <div className="intel-market-price-root">
       <nav className="intel-price-nav">

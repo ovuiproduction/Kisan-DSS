@@ -1,4 +1,5 @@
 from flask import Flask,request, render_template,jsonify
+import requests
 import pickle
 import pandas as pd
 import os
@@ -14,6 +15,30 @@ load_dotenv()
 app = Flask(__name__)
 CORS(app)
 CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
+
+# # OpenRouteService API key
+# API_KEY = "5b3ce3597851110001cf6248583463e809554709962155c80ab88883"  # Replace with your actual API key
+
+# @app.route('/api/distance', methods=['POST'])
+# def get_distance():
+#     print("request arrived")
+#     try:
+#         # Get JSON data from request
+#         data = request.get_json()
+
+#         # Make request to OpenRouteService
+#         headers = {
+#             "Authorization": API_KEY,
+#             "Content-Type": "application/json"
+#         }
+#         response = requests.post("https://api.openrouteservice.org/v2/matrix/driving-car", json=data, headers=headers)
+
+#         # Return response
+#         print(response.json())
+#         return jsonify(response.json()), response.status_code
+
+#     except requests.exceptions.RequestException as e:
+#         return jsonify({"error": str(e)}), 500
 
 #loading models
 try:

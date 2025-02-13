@@ -5,7 +5,7 @@ import "../static/css/intel-yield.css";
 
 export default function IntelYield() {
   const navigate = useNavigate();
-
+  const [loading, setLoading] = useState(false); // To manage the loading state
   const [formData, setFormData] = useState({
     year: "",
     commodity: "",
@@ -25,7 +25,7 @@ export default function IntelYield() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    setLoading(true); // Start loading
     // Check if all fields are filled
     for (const key in formData) {
       if (formData[key] === "") {
@@ -46,6 +46,7 @@ export default function IntelYield() {
       );
       const responseData = response.data;
       // Navigate to result page with received data
+      setLoading(false);
       navigate("/intel-yield-result", { state: responseData });
     } catch (error) {
       console.error("Error submitting form:", error);
@@ -250,12 +251,27 @@ export default function IntelYield() {
             </div>
           </div>
 
-          <div className="btn-block">
+          {/* <div className="btn-block">
             <button id="predict_btn" className="submitbtn" type="submit">
               Submit
             </button>
             <div id="loader" className="loader"></div>
-          </div>
+          </div> */}
+           {loading && (
+              <div className="loader-container">
+              <div className="spinner"></div>
+              <p>Processing...</p>
+            </div>
+          )}
+
+          {/* Submit Button (Only Show When Not Loading) */}
+          {!loading && (
+            <div className="btn-block">
+              <button id="predict_btn" className="submitbtn" type="submit">
+                Submit
+              </button>
+            </div>
+          )}
         </form>
       </div>
     </div>

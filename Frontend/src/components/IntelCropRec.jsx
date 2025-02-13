@@ -71,6 +71,7 @@ export default function IntelCropRec() {
       console.log("Response from server:", response.data);
       const data = response.data;
       console.log(data)
+      setLoading(false);
       navigate('/intel-crop-rec-result',{state:data})
       // Handle the response from the server if necessary
     } catch (error) {
@@ -282,12 +283,28 @@ export default function IntelCropRec() {
               />
             </div>
           </div>
-          <div className="btn-block">
+          {/* <div className="btn-block">
             <button id="predict_btn" className="submitbtn" type="submit">
               Submit
             </button>
             {loading && <div id="loader" className="loader"></div>}
-          </div>
+          </div> */}
+           {/* Loader Animation */}
+           {loading && (
+              <div className="loader-container">
+              <div className="spinner"></div>
+              <p>Processing...</p>
+            </div>
+          )}
+
+          {/* Submit Button (Only Show When Not Loading) */}
+          {!loading && (
+            <div className="btn-block">
+              <button id="predict_btn" className="submitbtn" type="submit">
+                Submit
+              </button>
+            </div>
+          )}
         </form>
       </div>
     </div>
