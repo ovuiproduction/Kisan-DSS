@@ -1,0 +1,9 @@
+react
+react-scripts
+react-dom
+react-router-dom
+react-chartjs-2 
+chart.js
+axios
+@fortawesome/fontawesome-free
+react-icons

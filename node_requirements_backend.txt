@@ -1,0 +1,10 @@
+jwt-decode
+express
+mongoose
+cors
+body-parser
+bcryptjs
+jsonwebtoken
+dotenv
+@google-cloud/translate
+@google/generative-ai
