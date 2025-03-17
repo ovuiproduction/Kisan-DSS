@@ -41,7 +41,7 @@
 ### 🏗️ Tech Stack
 1. Backend (Flask & Node.js)
 - Flask (Python) for AI-based recommendations
-- Node.js for API handling and user management
+- Node.js and Express for API handling and user management
 - MongoDB for storing user, crop, and market data
 2. Frontend (React.js)
 - React.js for an interactive farmer dashboard
