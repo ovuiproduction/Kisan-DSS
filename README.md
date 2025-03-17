@@ -1,9 +1,10 @@
-## 🌾 Kisan-DSS (Decision Support System)
-🚀 Empowering Farmers with Real-Time Market Intelligence & Direct Market Access
-Kisan DSS is an advanced Agritech platform designed to empower farmers by providing:
-✅ Real-time market insights
-✅ Intelligent crop & market recommendations
-✅ Direct access to buyers & e-commerce marketplace
+# 🌾 Kisan-DSS (Decision Support System)
+## 🚀 Empowering Farmers with Real-Time Market Intelligence & Direct Market Access
+
+### Kisan DSS is an advanced Agritech platform designed to empower farmers by providing:
+#### ✅ Real-time market insights
+#### ✅ Intelligent crop & market recommendations
+#### ✅ Direct access to buyers & e-commerce marketplace
 
 #### Our system integrates AI, machine learning, and e-commerce functionalities to revolutionize agriculture.
 
