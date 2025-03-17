@@ -39,17 +39,18 @@
 🎤 Voice-enabled interactions for accessibility.
 
 ### 🏗️ Tech Stack
-🔹 Backend (Flask & Node.js)
-Flask (Python) for AI-based recommendations
-Node.js & Express for API handling and user management
-MongoDB for storing user, crop, and market data
-🔹 Frontend (React.js)
-React.js for an interactive farmer dashboard
-Bootstrap & CSS for responsive UI
-🔹 AI & Machine Learning
-Gemini AI API for chatbot interactions
-Pre-trained ML models for market prediction
-NLP & Text-to-Speech (TTS) for multilingual support
+1. Backend (Flask & Node.js)
+- Flask (Python) for AI-based recommendations
+- Node.js & Express for API handling and user management
+- MongoDB for storing user, crop, and market data
+2. Frontend (React.js)
+- React.js for an interactive farmer dashboard
+- Bootstrap & CSS for responsive UI
+3. AI & Machine Learning
+- Gemini AI API for chatbot interactions
+- Pre-trained ML models for market prediction
+- NLP & Text-to-Speech (TTS) for multilingual support
+  
 ### 📂 Folder Structure
 ```bash
 Kisan-DSS/
