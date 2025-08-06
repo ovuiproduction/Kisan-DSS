@@ -119,3 +119,6 @@ cd Frontend
 npm install
 npm start
 ```
+
+## LICENSE
+This project is licensed under the [MIT License](https://github.com/ovuiproduction/Kisan-DSS/blob/main/LICENSE).  
