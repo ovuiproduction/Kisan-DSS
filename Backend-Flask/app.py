@@ -1,4 +1,5 @@
-from flask import Flask,request, render_template,jsonify
+from flask import Flask,request, render_template,jsonify,request
+import datetime
 import requests
 import pickle
 import pandas as pd
@@ -12,29 +13,31 @@ import random
 from flask_cors import CORS
 import time
 import concurrent.futures
+from googleapiclient.discovery import build
 
-
-load_dotenv()
+# load_dotenv()
 app = Flask(__name__)
 CORS(app)
+
+load_dotenv()
 
 #loading models
 try:
     # Yield prediction model and preprocessor
-    yield_model = pickle.load(open('models/cropyield/model.pkl', 'rb'))
-    yield_preprocessor = pickle.load(open('models/cropyield/preprocessor.pkl', 'rb'))
+    yield_model = pickle.load(open('models/cropyieldmodels/model.pkl', 'rb'))
+    yield_preprocessor = pickle.load(open('models/cropyieldmodels/preprocessor.pkl', 'rb'))
     # WPI model and preprocessor
-    wpi_model = pickle.load(open('models/wpi/model.pkl', 'rb'))
-    wpi_preprocessor = pickle.load(open('models/wpi/preprocessor.pkl', 'rb'))
+    wpi_model = pickle.load(open('models/wpimodels/model.pkl', 'rb'))
+    wpi_preprocessor = pickle.load(open('models/wpimodels/preprocessor.pkl', 'rb'))
     # Market price model
-    market_price_model = pickle.load(open('models/marketprice/model.pkl', 'rb'))
-    market_price_preprocessor = pickle.load(open('models/marketprice/preprocessor.pkl', 'rb'))
+    market_price_model = pickle.load(open('models/marketpricemodels/model.pkl', 'rb'))
+    market_price_preprocessor = pickle.load(open('models/marketpricemodels/preprocessor.pkl', 'rb'))
      # rainfall prediction model and preprocessor (Division Wise)
-    rainfall_model = pickle.load(open('models/rainfall/model.pkl', 'rb'))
-    rainfall_preprocessor = pickle.load(open('models/rainfall/preprocessor.pkl', 'rb'))
+    rainfall_model = pickle.load(open('models/rainfallmodels/model.pkl', 'rb'))
+    rainfall_preprocessor = pickle.load(open('models/rainfallmodels/preprocessor.pkl', 'rb'))
      # temperature model and preprocessor
-    temperature_model = pickle.load(open('models/temperature/model.pkl', 'rb'))
-    temperature_preprocessor = pickle.load(open('models/temperature/preprocessor.pkl', 'rb'))
+    temperature_model = pickle.load(open('models/temperaturemodels/model.pkl', 'rb'))
+    temperature_preprocessor = pickle.load(open('models/temperaturemodels/preprocessor.pkl', 'rb'))
     
    
 except FileNotFoundError as e:
@@ -43,14 +46,13 @@ except FileNotFoundError as e:
 # gemini configuration
 API_KEY = os.getenv("GEMINI_API_KEY")
 genai.configure(api_key = API_KEY)
-geminimodel = genai.GenerativeModel("gemini-1.5-flash")
+geminimodel = genai.GenerativeModel("gemini-2.5-flash-lite")
 
 # fule data key
 DAILY_FUEL_DATA_KEY = os.getenv("DAILY_FUEL_DATA_KEY")
-
+OPENWEATHER_API_KEY = os.getenv("OPENWEATHERMAP_API_KEY")
 
 # gemini request and response formating
-
 
 def gemini_response(Prompt):
     response = geminimodel.generate_content(Prompt)
@@ -58,7 +60,6 @@ def gemini_response(Prompt):
 
 def get_data(Prompt):
     response = gemini_response(Prompt)
-    print(response.text)
     if not response or not response.text:  
         print("Error: Empty response from the model.")
         return None  
@@ -83,13 +84,14 @@ def get_data(Prompt):
         print("Error:", e)
         return None
 
-def get_data_gov(Prompt):
+def get_response(Prompt):
     response = gemini_response(Prompt)
     try:
         json_string = response.text.strip()
         json_string = re.sub(r"```(?:json)?\s*", "", json_string)
         json_string = re.sub(r"```", "", json_string)
         json_data = json.loads(json_string)
+        print(json_data)
         return json_data
     
     except json.JSONDecodeError as e:
@@ -222,7 +224,6 @@ def getMahaAnnualRainfall(year, district):
                 {{ "rainfall": 850.2 }}
                 """
     rainfall = get_data(prompt)
-    print(rainfall)
     return rainfall['rainfall']
 
 # WPI prediction
@@ -242,7 +243,6 @@ def getIndiaRainfallMonthly(year, month):
                 {{ "rainfall": 154.5 }}  
                 """
     rainfall = get_data(prompt)
-    print(rainfall)
     return rainfall['rainfall']
 
 # market selection guide
@@ -497,53 +497,6 @@ def getIntelCropData(Commoditys, Year, Month, District, Area, Nitrogen, Potassiu
     return IntelCroprecData
 
 
-
-# get coordinates
-# def get_coordinates(subdistrict, district):
-#     district = district.lower()
-#     subdistrict = get_subdistrict(subdistrict)
-#     subdistrict = subdistrict.lower()
-#     query = f"{subdistrict}, {district}, maharashtra"
-#     url = f"https://nominatim.openstreetmap.org/search?format=json&countrycodes=IN&addressdetails=1&q={query}"
-    
-#     try:
-#         headers = {
-#             "User-Agent": "kisan-dss/1.0",
-#             "Accept": "application/json",
-#             "Accept-Language": "en-US,en;q=0.9",
-#         }
-#         response = requests.get(url,headers=headers)
-        
-#         # Check if the request was successful
-#         if response.status_code != 200:
-#             print(f"Error: Received status code {response.status_code}")
-#             return None
-        
-#         # Parse the JSON response
-#         data = response.json()
-        
-#         if data:
-#             for item in data:
-#                 if item.get("address"):
-#                     taluka_match = item["address"].get("county") or item["address"].get("suburb") or item["address"].get("town") or item["address"].get("village")
-#                     district_match = item["address"].get("state_district") or item["address"].get("county") or item["address"].get("state")
-                    
-#                     # Check if the subdistrict and district match
-#                     if taluka_match and district_match and subdistrict.lower() in taluka_match.lower() and district.lower() in district_match.lower():
-#                         return {"lat": float(item["lat"]), "lon": float(item["lon"])}
-        
-#         # If no matching data is found
-#         print("No matching data found.")
-#         return None
-    
-#     except requests.exceptions.RequestException as e:
-#         print(f"Request failed: {e}")
-#         return None
-#     except ValueError as e:
-#         print(f"Failed to parse JSON: {e}")
-#         print("Response:", response.text)
-#         return None
-
 coordinate_cache = {}
 
 def get_coordinates(subdistrict, district):
@@ -553,7 +506,6 @@ def get_coordinates(subdistrict, district):
     # Check if the coordinates are already in the cache
     cache_key = (subdistrict, district)
     if cache_key in coordinate_cache:
-        print("Returning from cache coordinates")
         return coordinate_cache[cache_key]
 
     query = f"{subdistrict}, {district}, maharashtra"
@@ -598,31 +550,6 @@ def get_coordinates(subdistrict, district):
         print(f"Request failed: {e}")
         return None
 
-# def calculate_osrm_distance(source_coords, destination_coords):
-#     try:
-#         url = f"http://router.project-osrm.org/route/v1/driving/{source_coords['lon']},{source_coords['lat']};{destination_coords['lon']},{destination_coords['lat']}?overview=false"
-#         response = requests.get(url)
-        
-#         if response.status_code != 200:
-#             print(f"Error: Received status code {response.status_code}")
-#             return None
-        
-#         data = response.json()
-#         if data.get("routes"):
-#             distance = data["routes"][0]["legs"][0]["distance"] / 1000  # distance in km
-#             duration = data["routes"][0]["legs"][0]["duration"] / 60  # duration in minutes
-#             return {"distance": distance, "duration": duration}
-#         time.sleep(500)
-#         print("Error: No route found in the response.")
-#         return None
-#     except requests.exceptions.RequestException as e:
-#         print(f"Error making the request: {e}")
-#         return None
-#     except Exception as e:
-#         print(f"Unexpected error: {e}")
-#         return None
-
-# Cache to store OSRM distances
 distance_cache = {}
 
 def calculate_osrm_distance(source_coords, destination_coords):
@@ -632,7 +559,6 @@ def calculate_osrm_distance(source_coords, destination_coords):
 
         # Check if data is already in the cache
         if cache_key in distance_cache:
-            print("Returning from cache")
             return distance_cache[cache_key]
 
         # Make request to OSRM API
@@ -667,28 +593,6 @@ def calculate_osrm_distance(source_coords, destination_coords):
         return None
 
 
-# def get_fuel_prices_for_district(district):
-#     try:
-#         district = district.lower()
-#         url = f"https://daily-petrol-diesel-lpg-cng-fuel-prices-in-india.p.rapidapi.com/v1/fuel-prices/today/india/maharashtra/{district}"
-#         headers = {
-#             "x-rapidapi-key": DAILY_FUEL_DATA_KEY,
-#             "x-rapidapi-host": "daily-petrol-diesel-lpg-cng-fuel-prices-in-india.p.rapidapi.com",
-#         }
-#         response = requests.get(url, headers=headers)
-        
-#         if response.status_code != 200:
-#             print(f"Error: Received status code {response.status_code}")
-#             return None
-        
-#         return response.json()
-#     except requests.exceptions.RequestException as e:
-#         print(f"Error making the request: {e}")
-#         return None
-#     except Exception as e:
-#         print(f"Unexpected error: {e}")
-#         return None
-
 # Dictionary to store cached fuel prices
 fuel_price_cache = {}
 
@@ -699,7 +603,7 @@ def get_fuel_prices_for_district(district):
         # Check if data is in cache and not expired
         if district in fuel_price_cache:
             cached_data = fuel_price_cache[district]
-            print("Returning from cache fuel")
+         
             return cached_data
 
         url = f"https://daily-petrol-diesel-lpg-cng-fuel-prices-in-india.p.rapidapi.com/v1/fuel-prices/today/india/maharashtra/{district}"
@@ -807,7 +711,18 @@ def getTransportationData(src_subdistrict, src_district, des_district, mileage):
 
 @app.route('/')
 def index():
-    return ("Server running on localhost:5000")
+    return jsonify({
+        "message": "Kisan DSS API Server",
+        "status": "running",
+        "platform": "Hugging Face Spaces",
+        "endpoints": [
+            "/intel-market-price",
+            "/intel-wpi-price", 
+            "/intel-build-decision",
+            "/intel-crop-recommendation",
+            "/intel-gov-scheme"
+        ]
+    })
 
 @app.route('/intel-market-price', methods=['POST'])
 def marketPrice():
@@ -859,7 +774,6 @@ def marketPrice():
         except Exception as e:
             # Handle unexpected errors
             return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
-
 
 @app.route('/intel-wpi-price', methods=['POST'])
 def IntelWPI():
@@ -927,7 +841,6 @@ def IntelWPI():
         except Exception as e:
             # Handle unexpected errors
             return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
-
 
 @app.route('/intel-build-decision', methods=['POST'])
 def getDecision():
@@ -1023,15 +936,145 @@ def IntelCropRec():
         IntelCropData = getIntelCropData(Commoditys,Year,Month,District,Area,Nitrogen,Potassium,Phosphorus,Fertilizer,soilColor,pH)
         conclusion = getCropSelectionConclusion(IntelCropData,Nitrogen,Potassium,Phosphorus,soilColor,pH)
         return jsonify({'data':IntelCropData,'conclusion':conclusion})
-    
-    
+     
 @app.route('/intel-gov-scheme', methods=['POST'])   
 def getGovSchemeData():
     data = request.get_json()
     commodity = data.get('commodity')
     Prompt = f"""Provide information about 3 Indian government schemes related to {commodity} farming in JSON format. The JSON should be an array of objects. Each object should have the following keys: 'scheme_name', 'purpose', and 'benefits' (which should be an array of strings). do not write the disclaimer or extra information only json data of goverment scheme in specified format"""
-    goverment_data = get_data_gov(Prompt)
+    goverment_data = get_response(Prompt)
     return jsonify({'govSchemeData':goverment_data})
 
+@app.route('/intel-cultivation-practices', methods=['POST'])   
+def getCultivationPractices():
+    data = request.get_json()
+    commodity = data.get('query')
+    language = data.get('language', 'English')
+    
+    Prompt = f"""
+        Provide recommended cultivation practices for {commodity} farming in India.
+        # Output language : {language}
+        Return output strictly in JSON format with keys:
+        {{
+            "crop": "{commodity}",
+            "cultivation_practices": [
+                {{
+                "stage": "Stage name",
+                "description": "Explanation"
+                }}
+            ],
+            "recommended_youtube_videos": [
+                {{
+                "title": "Video title",
+                "channel": "Channel name",
+                "url": "Video URL"
+                }}
+            ]
+            }}
+
+        Guidelines:
+        1. Give practices specific to {commodity}.
+        2. Include 3-5 YouTube video links validated to be relevant to {commodity} farming.
+        3. Do NOT add any text outside JSON. No disclaimers.
+        """
+
+    cultivation_data = get_response(Prompt)
+    return jsonify({'cultivationPractices': cultivation_data})
+
+
+def fetch_weather_data(city,country):
+    api_key = OPENWEATHER_API_KEY
+    base_url = "http://api.openweathermap.org/data/2.5/forecast/hourly"
+    complete_url = f"{base_url}?q={city},{country}&appid={api_key}&units=metric"
+    response = requests.get(complete_url)
+    weather_data = response.json()
+    return weather_data
+
+def extract_agri_weather_info(weather_data):
+    important_info = []
+    for entry in weather_data.get("list", []):
+        rain = entry.get("rain", {})
+        rain_mm = rain.get("1h") or rain.get("3h") or 0
+        
+        info = {
+            "datetime": entry.get("dt_txt"),
+            "rain_mm": rain_mm,
+            "pop": entry.get("pop", 0),
+            "temp": entry["main"].get("temp"),
+            "humidity": entry["main"].get("humidity"),
+            "wind_speed": entry["wind"].get("speed"),
+            "description": entry["weather"][0].get("description"),
+            "clouds": entry.get("clouds", {}).get("all", 0)
+        }
+
+        important_info.append(info)
+    return important_info
+
+
+def getResponseFromWeatherData(weather_data):
+    prompt = f"""You are an expert Agriculture Advisor for Indian farmers. 
+            Your task is to analyze the weather data and give practical, simple, actionable farm advisories in Marathi.
+
+            Weather Forecast Data:
+            {weather_data}
+
+            Goals:
+            - Use weather to recommend actions for the next 1–3 days
+            - Output must be easy to understand for rural farmers
+
+            Include advisories for:
+            1) **Irrigation**
+            2) **Spraying (Pesticide/Fungicide/Herbicide)**
+            3) **Fertilizer/Urea/Manure Application**
+            4) **Pest & Disease Risk**
+            5) **Heat Stress / Sunlight Advisory**
+            6) **Rainfall Safety Advisory**
+            7) **Wind Advisory (Spray drift, lodging risk)**
+            8) **General Crop Protection Tips**
+            9) **Short summary + clear DO and DON'T list**
+
+            Decision Rules:
+            - Rain > 0 mm or POP > 60% = Avoid spraying and fertilizer
+            - If next 2 days total rain > 5 mm = Avoid irrigation
+            - If rain < 2 mm & high temp = Recommend irrigation
+            - Humidity > 80% + warmth = Fungus/Pest alert
+            - Wind speed > 4 m/s = No spraying (drift danger)
+            - High temperature (>34°C) = Heat stress — advise irrigation & mulch
+            - Cloudy + humid = High disease risk
+
+            Output Format:
+            1) ✅ **Rain & Weather Summary**
+            2) 💧 **Irrigation Advice**
+            3) 🧴 **Spray Advice**
+            4) 🌾 **Fertilizer Advice**
+            5) 🐛 **Pest/Disease Alert**
+            6) ☀️ **Heat/Weather Protection**
+            7) 📌 **Farmer DOs & DON'Ts**
+            8) 🔊 **Very short farmer-friendly voice-style line**
+            (Example: "उद्या हलका पाऊस, फवारणी थांबवा, हलके सिंचन करा.")
+
+            Language:
+            - Marathi
+            - Short sentences
+            - Very practical, ground-level tone
+            - Avoid scientific jargon — use farmer-friendly words
+            """
+
+    response = gemini_response(prompt)
+    advisory = response.text.strip()
+    return advisory
+
+@app.route('/intel-weather-advisory', methods=['POST'])
+def getWeatherAdvisory():
+    data = request.get_json()
+    city = data.get('city')
+    country = 'IN'
+    weather_data = fetch_weather_data(city, country)
+    weather_data_extracted = extract_agri_weather_info(weather_data)
+    advisory = getResponseFromWeatherData(weather_data_extracted)
+    print(advisory)
+    return jsonify({'weatherAdvisory': advisory})
+
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    port = int(os.environ.get("PORT", 7860))
+    app.run(host='0.0.0.0', port=port, debug=False)

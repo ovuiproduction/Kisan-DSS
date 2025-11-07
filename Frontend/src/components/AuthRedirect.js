@@ -7,11 +7,11 @@ const AuthRedirect = () => {
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
-      navigate("/login"); // Redirect to login if user is not authenticated
+      navigate("/login");
     }
   }, [navigate]);
 
-  return null; // This component does not render anything
+  return null;
 };
 
 export default AuthRedirect;

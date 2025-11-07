@@ -4,6 +4,10 @@ import { jwtDecode } from "jwt-decode";
 import '@fortawesome/fontawesome-free/css/all.css';
 import "../css/ActiveCrops.css";
 
+
+import { fetchActiveCrops_api } from "./apis_db";
+import { deleteCrop_api  } from "./apis_db";
+
 const ActiveCrops = () => {
   const [email, setEmail] = useState("");
   const [activeCrops, setActiveCrops] = useState([]);
@@ -11,8 +15,6 @@ const ActiveCrops = () => {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    console.log("Token:", token);
-
     if (token) {
       try {
         const decoded = jwtDecode(token);
@@ -32,20 +34,9 @@ const ActiveCrops = () => {
     }
   }, [email]); // Runs only when email is updated
 
-  const fetchCrops = async (userEmail) => {
+  const fetchCrops = async (email) => {
     try {
-      console.log("Fetching crops for email:", userEmail);
-      const response = await fetch(`http://localhost:4000/active-crops?email=${encodeURIComponent(userEmail)}`, {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch crops");
-      }
-
-      const data = await response.json();
-      console.log("Fetched Crops:", data);
+      const data = await fetchActiveCrops_api(email);
       setActiveCrops(data);
     } catch (error) {
       console.error("Error fetching active crops:", error);
@@ -54,15 +45,10 @@ const ActiveCrops = () => {
 
   const deleteCrop = async (cropId) => {
     try {
-      console.log("Deleting crop with ID:", cropId);
-      const response = await fetch(`http://localhost:4000/delete-crop/${cropId}`, {
-        method: "DELETE",
-      });
-
-      if (!response.ok) {
+      const success = await deleteCrop_api(cropId);
+      if (!success) {
         throw new Error("Failed to delete crop");
       }
-
       // Remove deleted crop from UI
       setActiveCrops((prevCrops) => prevCrops.filter((crop) => crop._id !== cropId));
       console.log("Crop deleted successfully");
@@ -71,19 +57,9 @@ const ActiveCrops = () => {
     }
   };
 
-  let returnHome = async (e) => {
-    e.preventDefault();
-    navigate("/home-farmer");
-  };
 
   return (
     <>
-      <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-        rel="stylesheet"
-        integrity="sha384-T3c6oIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
-        crossOrigin="anonymous"
-      ></link>
       <script
         src="https://kit.fontawesome.com/dd438282bc.js"
         crossOrigin="anonymous"
@@ -92,7 +68,7 @@ const ActiveCrops = () => {
       <div className="activecrop-container">
         <h2>Active Crops for Sale</h2>
         <div className="activecrop-list">
-          {activeCrops.length > 0 ? (
+          {(activeCrops && activeCrops.length > 0) ? (
             activeCrops.map((crop) => (
               <div key={crop._id} className="activecrop-card">
                 {crop.imageBase64 && (

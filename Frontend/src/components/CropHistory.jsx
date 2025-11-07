@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
-import '@fortawesome/fontawesome-free/css/all.css';
+import "@fortawesome/fontawesome-free/css/all.css";
 import "../css/CropHistory.css";
+
+import { fetchCropHistory_api } from "./apis_db";
 
 const CropHistory = () => {
   const [email, setEmail] = useState("");
@@ -16,8 +18,7 @@ const CropHistory = () => {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    console.log("Token:", token);
-
+  
     if (token) {
       try {
         const decoded = jwtDecode(token);
@@ -39,18 +40,7 @@ const CropHistory = () => {
 
   const fetchCrops = async (userEmail) => {
     try {
-      console.log("Fetching crops for email:", userEmail);
-      const response = await fetch(`http://localhost:4000/history-crops?email=${encodeURIComponent(userEmail)}`, {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch crops");
-      }
-
-      const data = await response.json();
-      console.log("Fetched Crops:", data);
+      const data = await fetchCropHistory_api(userEmail);
       setHistoryCrops(data);
     } catch (error) {
       console.error("Error fetching active crops:", error);
@@ -84,10 +74,18 @@ const CropHistory = () => {
                   />
                 )}
                 <h3 className="activecrop-name">{crop.cropname}</h3>
-                <p className="activecrop-price">Price: ₹{crop.price_per_kg} per kg</p>
-                <p className="activecrop-quantity">Quantity: {crop.quantity} kg</p>
-                <p className="activecrop-earnings">Earnings: {crop.earnings} ₹</p>
-                <p className="activecrop-rating">Avg Rating: {crop.rating?.average} / 5</p>
+                <p className="activecrop-price">
+                  Price: ₹{crop.price_per_kg} per kg
+                </p>
+                <p className="activecrop-quantity">
+                  Quantity: {crop.quantity} kg
+                </p>
+                <p className="activecrop-earnings">
+                  Earnings: {crop.earnings} ₹
+                </p>
+                <p className="activecrop-rating">
+                  Avg Rating: {crop.rating?.average} / 5
+                </p>
               </div>
             ))
           ) : (

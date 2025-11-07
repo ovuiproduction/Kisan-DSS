@@ -1,105 +1,236 @@
 # 🌾 Kisan-DSS (Decision Support System)
 ## Empowering Farmers to Make the Right Decisions
 
-### [Demo](https://youtu.be/TGfO0_ERgDQ)
+### [Demo](https://youtu.be/NkTDX5rDYzc?si=oNnOrG1ZxfzEJDCR)
 
 ### [Research Paper](https://internationalpubls.com/index.php/cana/article/view/762)
 
 ## 🚀 Empowering Farmers with Real-Time Market Intelligence & Direct Market Access
 
-### Kisan DSS is an advanced Agritech platform designed to empower farmers by providing:
-#### ✅ Real-time market insights
-#### ✅ Intelligent crop & market recommendations
-#### ✅ Direct access to buyers & e-commerce marketplace
+## ✅ System Addresses Key Farmer Questions
 
-#### Our system integrates AI, machine learning, and e-commerce functionalities to revolutionize agriculture.
+👨‍🌾 **What to sow?** 🌱  
+👩‍🌾 **How to grow?** 🚜💧🌾  
+👨‍🌾 **When to harvest?** ⏱️🌤️🌾  
+👩‍🌾 **Where to sell?** 📦🛒📈  
 
-### 📌 Features
-1️⃣ Real-time APMC Market Prices
-📊 Fetches real-time APMC market prices from official sources.
-💰 Helps farmers maximize profits by selling at the best price.
 
-#### 2️⃣ Intelligent Market Recommendation
-🧠 AI-driven market analysis suggests the best locations to sell crops.
-📈 Predicts future price trends based on historical data.
+## 🌾 Key Capabilities of Kisan-DSS
 
-#### 3️⃣ Smart Decision Building
-📡 Uses weather, soil, and demand data to assist in crop-selling decisions.
-📍 Recommends the best markets for farmers based on profitability & transport costs.
+### ✅ Smart Crop Selection  
+Based on rainfall, temperature, soil conditions & profit predictions  
 
-#### 4️⃣ Intelligent Crop Recommendation
-🌱 Suggests optimal crops for a farmer based on soil type, climate, and market demand.
-📊 Helps in crop diversification for higher revenue.
+---
 
-#### 5️⃣ E-Commerce Marketplace
-🛒 Farmers can list crops for sale directly to buyers.
-🤝 Enables direct transactions between farmers & consumers without intermediaries.
+### ✅ Weather-Smart Cultivation Guidance  
+Actionable location-based advisories to reduce crop loss & improve yield  
 
-#### 6️⃣ Multilingual Dashboard & AI Chatbot
-💬 AI-powered chatbot (AgriBot) answers farmer queries in multiple languages.
-🎤 Voice-enabled interactions for accessibility.
+---
 
-### 🏗️ Tech Stack
-1. Backend (Flask & Node.js)
-- Flask (Python) for AI-based recommendations
-- Node.js and Express for API handling and user management
-- MongoDB for storing user, crop, and market data
-2. Frontend (React.js)
-- React.js for an interactive farmer dashboard
-- Bootstrap & CSS for responsive UI
-3. AI & Machine Learning
-- Gemini AI API for chatbot interactions
-- Pre-trained ML models for market prediction
-- NLP & Text-to-Speech (TTS) for multilingual support
+### ✅ Government Scheme Detection  
+Automatic identification of subsidies and farmer-benefit programs  
+
+---
+
+### ✅ Harvest Timing Optimization  
+Combining price trends & climate forecasts to pick the ideal harvesting window  
+
+---
+
+### ✅ Smart Selling & Market Intelligence  
+Compare mandi prices, transport costs & storage to choose the most profitable market  
+
+---
+
+### ✅ Voice-Assisted Multilingual Chatbot  
+AI-driven farmer assistant in regional languages for accessible guidance  
+
+---
+
+## 🌍 Impact Vision
+
+Empowering **small & marginal farmers** with the same intelligence and insights available to agri-corporates —  
+in their **own language**, through **simple voice-based interaction**.
+
+From **what to sow** to **where to sell**, Kisan-DSS brings **AI to the farm gate**,  
+enabling farmers to **grow smarter, sell better, and earn more**.
+
+
+### 🧠 Technology Stack
+
+#### ⚙️ Backend
+- **Flask / FastAPI (Python)** for AI logic & APIs  
+- **Node.js & Express** for authentication & user services  
+- **MongoDB** for storing user profiles, crop data, and market insights  
+
+#### 🎯 AI & Machine Learning
+- **Python, Scikit-Learn, Pandas, NumPy** for data processing & ML  
+- **ML models** for price & profitability prediction  
+- **Gemini API** for conversational AI & decision support  
+
+#### 🌐 Frontend
+- **React.js UI** with voice interface  
+- **Bootstrap & CSS** for responsive & user-friendly design  
+
+#### 🌍 External Integrations & APIs
+- **OpenWeather API** for real-time & forecast-based advisories  
+- **OSRM API** for transportation & logistics optimization  
+- **Government schemes & agri-data APIs** for policy & market info  
+- **Web Speech API** for audio and voice to text conversion
+
+
   
 ### 📂 Folder Structure
 ```bash
 Kisan-DSS/
-│── Backend-Flask/
-│   ├── pip_requirements_backend.txt
-│   ├── models/
-│   │   ├── MarketPrice/
-│   │   │   ├── model.pkl
-│   │   │   ├── preprocessor.pkl
-│   │   ├── Rainfall/
-│   │   │   ├── model.pkl
-│   │   │   ├── preprocessor.pkl
-│   │   ├── WPI/
-│   │   │   ├── model.pkl
-│   │   │   ├── preprocessor.pkl
-│   ├── .env
+├── LICENSE
+├── node_requirements_backend.txt
+├── node_requirements_frontend.txt
+├── pip_requirements_backend.txt
+├── README.md
+│
+├── Backend-Flask/
 │   ├── app.py
+│   └── models/
+│       ├── cropyield/
+│       ├── MarketPrice/
+│       ├── Rainfall/
+│       ├── Temperature/
+│       └── WPI/
 │
-│── Backend-Node/
-│   ├── node_requirements_backend.txt
-│   ├── models/
-│   │   ├── crop.js
-│   │   ├── farmer.js
-│   │   ├── user.js
-│   ├── .env
+├── Backend-Node/
+│   ├── package.json
 │   ├── server.js
+│   └── models/
+│       ├── crop.js
+│       ├── farmer.js
+│       └── user.js
 │
-│── Frontend/
-    ├── node_requirements_frontend.txt
+└── Frontend/
+    ├── package.json
     ├── public/
+    │   ├── _redirects
     │   ├── index.html
-    ├── src/
-        ├── components/
-        ├── css/
-        ├── static/
-        │   ├── css/
-        │   ├── CropImages/
+    │   └── site.webmanifest
+    └── src/
         ├── app.js
         ├── index.js
+        ├── components/
+        │   ├── ActiveCrops.jsx
+        │   ├── Alert.jsx
+        │   ├── apis_db.jsx
+        │   ├── apis_ml.jsx
+        │   ├── AuthComponent.jsx
+        │   ├── AuthRedirect.js
+        │   ├── axiosConfig.js
+        │   ├── ChatBot.jsx
+        │   ├── CoverPage.jsx
+        │   ├── CropHistory.jsx
+        │   ├── FarmerAdminDashboard.jsx
+        │   ├── FarmerDashBoard.jsx
+        │   ├── FarmerProfile.jsx
+        │   ├── FarmerProfileCard.jsx
+        │   ├── HelpModal.jsx
+        │   ├── IntelCropRecommendationForm.jsx
+        │   ├── IntelCropRecResult.jsx
+        │   ├── IntelCultivationGuide.jsx
+        │   ├── IntelCultivationPractices.jsx
+        │   ├── IntelGovMarketForm.jsx
+        │   ├── IntelGovMarketPrice.jsx
+        │   ├── IntelGovScheme.jsx
+        │   ├── IntelLocalMarket.jsx
+        │   ├── IntelLocalMarketForm.jsx
+        │   ├── LoginFarmer.jsx
+        │   ├── LoginUser.jsx
+        │   ├── MyCart.jsx
+        │   ├── MyOrders.jsx
+        │   ├── PostCrop.jsx
+        │   ├── ProtectedRoute.js
+        │   ├── SignupFarmer.jsx
+        │   ├── SignupUser.jsx
+        │   ├── SpeakMessages.jsx
+        │   ├── TransactionHistory.jsx
+        │   ├── UserAdminDashboard.jsx
+        │   ├── UserDashboard.jsx
+        │   ├── UserProfile.jsx
+        │   └── UserTransactions.jsx
+        ├── css/
+        │   ├── ActiveCrops.css
+        │   ├── Alert.css
+        │   ├── auth.css
+        │   ├── chatbot.css
+        │   ├── CoversPage.css
+        │   ├── CropDistribution.css
+        │   ├── CropHistory.css
+        │   ├── cropSubmitForm.css
+        │   ├── cultivationGuide.css
+        │   ├── FarmerAdminDashboard.css
+        │   ├── FarmerProfile.css
+        │   ├── HelpModal.css
+        │   ├── HomeFarmer.css
+        │   ├── HomeUser.css
+        │   ├── MyCart.css
+        │   ├── MyOrders.css
+        │   ├── NewPost.css
+        │   ├── PostCrop.css
+        │   ├── Services.css
+        │   ├── SowingGuide.css
+        │   ├── style.css
+        │   ├── TransactionHistory.css
+        │   ├── UserAdminDashboard.css
+        │   ├── UserDashboard.css
+        │   └── UserProfile.css
+        ├── static/
+        │   ├── CropImages/
+        │   ├── css/
+        │   │   ├── farmer_dashboard.css
+        │   │   ├── intel_gov_market_form.css
+        │   │   ├── intel_gov_market_price.css
+        │   │   ├── intel_local_market.css
+        │   │   ├── intel-crop-rec-result.css
+        │   │   ├── intel-crop-rec.css
+        │   │   ├── intel-crop-reccomandation.css
+        │   │   └── intel-gov-scheme.css
+        │   └── images/
+        └── Training video/
 
 
 ```
 ### 🏗️ Installation & Setup
+
 #### 1️⃣ Clone the Repository
 ```bash
 git clone https://github.com/shripad19/Kisan-DSS.git
 cd Kisan-DSS
 ```
+
+#### Enviromental Variable Setup
+##### Backend (Flask)
+```bash
+GEMINI_API_KEY = "<your api key>"
+DAILY_FUEL_DATA_KEY = "<your api key>"
+OPENWEATHERMAP_API_KEY = "<your api key>"
+```
+**DAILY_FUEL_DATA_KEY**
+[Generate API Key](https://rapidapi.com/mi8y-mi8y-default/api/daily-petrol-diesel-lpg-cng-fuel-prices-in-india)
+
+**OPENWEATHERMAP_API_KEY**
+[Generate API Key](https://openweathermap.org/)
+---
+
+##### Backend (Node)
+```bash
+JWT_SECRET=mySuperSecretKey123!@#
+EMAIL_USER=<your email>
+GEMINI_API_KEY=<your api key>
+MONGODB_URI=<mongodb url>
+SENDGRID_API_KEY=<sendgrid api key>
+```
+**SENDGRID_API_KEY**
+[Generate API Key](https://sendgrid.com/en-us/solutions/email-api)
+
+---
+
 
 #### 2️⃣ Backend (Flask) Setup
 ```bash

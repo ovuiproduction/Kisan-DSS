@@ -1,55 +1,77 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
-import { FaTractor, FaUser, FaLeaf } from 'react-icons/fa';
-import '../css/CoversPage.css';
+import React, { useState } from "react";
+import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
+import { FaTractor, FaUser, FaLeaf } from "react-icons/fa";
+import { GiFarmer } from "react-icons/gi";
+import HelpModal from "./HelpModal";
+import AuthComponents from "./AuthComponent";
+import "../css/CoversPage.css";
 
-import AuthComponents from './AuthComponent';
+import kisan_dss_logo from "../static/images/kisan-dss-logo.png";
+
 const { AuthComponentUser, AuthComponentFarmer } = AuthComponents;
-
 const CoverPage = () => {
   const [flipped, setFlipped] = useState(null);
 
   const [showAuthFarmer, setShowAuthFarmer] = useState(false);
   const [showAuthUser, setShowAuthUser] = useState(false);
- 
+  const [showHelpModal, setShowHelpModal] = useState(false);
   return (
     <div className="cover-container">
-       {showAuthFarmer && <AuthComponentFarmer onClose={() => setShowAuth(false)} />}
-       {showAuthUser && <AuthComponentUser onClose={() => setShowAuth(false)} />}
+      {showAuthFarmer && (
+        <AuthComponentFarmer onClose={() => setShowAuth(false)} />
+      )}
+      {showAuthUser && <AuthComponentUser onClose={() => setShowAuth(false)} />}
+      {showHelpModal && <HelpModal onClose={() => setShowHelpModal(false)} />}
       <div className="background-gradient"></div>
 
-      <motion.div 
+      <motion.div
         className="content"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1 }}
       >
-        
         {/* Header Section */}
         <div className="header">
           {/* <FaLeaf className="logo-icon" /> */}
-          <h1>AgriConnect <span>🌱</span></h1>
-          <p>Connecting Farmers with the World</p>
+          <div className="logo-section-cover">
+            <img
+              src={kisan_dss_logo}
+              alt="kisan-dss-logo"
+              className="logo-icon"
+            />
+            <h1>Kisan DSS</h1>
+            <p>Empowering Farmers to Make the Right Decisions</p>
+          </div>
+          
+          <button
+            className="help-button"
+            onClick={() => setShowHelpModal(true)}
+          >
+            Need Help?
+          </button>
         </div>
 
         {/* Cards Container */}
         <div className="cards-container">
           {/* Farmer Card */}
-          <motion.div 
-            className={`card farmer ${flipped === 'farmer' ? 'flipped' : ''}`}
-            onMouseEnter={() => setFlipped('farmer')}
+          <motion.div
+            className={`card farmer ${flipped === "farmer" ? "flipped" : ""}`}
+            onMouseEnter={() => setFlipped("farmer")}
             onMouseLeave={() => setFlipped(null)}
             whileHover={{ scale: 1.05 }}
           >
             <div className="card-front">
-              <FaTractor className="card-icon" />
+              <GiFarmer className="card-icon" />
               <h2>Farmer Login</h2>
               <p>Direct from the fields</p>
             </div>
             <div className="card-back">
-                {/* <Link to="/login/farmer"> */}
-              <button onClick={() => setShowAuthFarmer(true)} className="login-btn farmer-btn">
+              {/* <Link to="/login/farmer"> */}
+              <button
+                onClick={() => setShowAuthFarmer(true)}
+                className="login-btn farmer-btn"
+              >
                 Continue as Farmer
               </button>
               {/* </Link> */}
@@ -58,9 +80,9 @@ const CoverPage = () => {
           </motion.div>
 
           {/* User Card */}
-          <motion.div 
-            className={`card user ${flipped === 'user' ? 'flipped' : ''}`}
-            onMouseEnter={() => setFlipped('user')}
+          <motion.div
+            className={`card user ${flipped === "user" ? "flipped" : ""}`}
+            onMouseEnter={() => setFlipped("user")}
             onMouseLeave={() => setFlipped(null)}
             whileHover={{ scale: 1.05 }}
           >
@@ -70,8 +92,11 @@ const CoverPage = () => {
               <p>Fresh from the farm</p>
             </div>
             <div className="card-back">
-                {/* <Link to="/login/user"> */}
-              <button onClick={()=>setShowAuthUser(true)} className="login-btn user-btn">
+              {/* <Link to="/login/user"> */}
+              <button
+                onClick={() => setShowAuthUser(true)}
+                className="login-btn user-btn"
+              >
                 Continue as User
               </button>
               {/* </Link> */}

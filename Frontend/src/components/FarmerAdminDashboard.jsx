@@ -19,28 +19,20 @@ import TransactionHistory from './TransactionHistory';
 
 const FarmerAdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('profile');
-
-  const [farmDetails] = useState({
-    name: "Green Valley Farms",
-    location: "Punjab, India",
-    crops: ["Wheat", "Rice", "Corn"]
-  });
  
   return (
     <>
       <div className="FarmerAdmin_container">
-        {/* Navigation */}
+       {/* Navigation */}
         <nav className="FarmerAdmin_nav">
           <h1 className="FarmerAdmin_logo">🌾 AgriSmart</h1>
-          <Link to="/" className="FarmerAdmin_backBtn">
+          <Link to="/farmer-dashboard" className="FarmerAdmin_backBtn">
             <FaArrowLeft /> Back to Home
           </Link>
         </nav>
 
         {/* Main Content */}
         <main className="FarmerAdmin_main">
-          <h2 className="FarmerAdmin_title">Crop Commerce Hub</h2>
-
           <div className="FarmerAdmin_card">
             {/* Sidebar */}
             <div className="FarmerAdmin_sidebar">
