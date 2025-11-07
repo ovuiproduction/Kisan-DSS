@@ -55,6 +55,7 @@ in their **own language**, through **simple voice-based interaction**.
 From **what to sow** to **where to sell**, Kisan-DSS brings **AI to the farm gate**,  
 enabling farmers to **grow smarter, sell better, and earn more**.
 
+---
 
 ### 🧠 Technology Stack
 
@@ -78,7 +79,7 @@ enabling farmers to **grow smarter, sell better, and earn more**.
 - **Government schemes & agri-data APIs** for policy & market info  
 - **Web Speech API** for audio and voice to text conversion
 
-
+---
   
 ### 📂 Folder Structure
 ```bash
@@ -216,6 +217,7 @@ OPENWEATHERMAP_API_KEY = "<your api key>"
 
 **OPENWEATHERMAP_API_KEY**
 [Generate API Key](https://openweathermap.org/)
+
 ---
 
 ##### Backend (Node)
