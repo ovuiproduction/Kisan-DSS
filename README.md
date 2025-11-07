@@ -5,7 +5,6 @@
 
 ### [Research Paper](https://internationalpubls.com/index.php/cana/article/view/762)
 
-## 🚀 Empowering Farmers with Real-Time Market Intelligence & Direct Market Access
 
 ## ✅ System Addresses Key Farmer Questions
 
@@ -195,11 +194,13 @@ Kisan-DSS/
         │   └── images/
         └── Training video/
 
-
 ```
+---
+
 ### 🏗️ Installation & Setup
 
-#### 1️⃣ Clone the Repository
+#### 1️⃣ Clone the Repository & Enviroment varible setup
+
 ```bash
 git clone https://github.com/shripad19/Kisan-DSS.git
 cd Kisan-DSS
