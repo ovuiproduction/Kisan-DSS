@@ -223,11 +223,11 @@ OPENWEATHERMAP_API_KEY = "<your api key>"
 
 ##### Backend (Node)
 ```bash
-JWT_SECRET=mySuperSecretKey123!@#
-EMAIL_USER=<your email>
-GEMINI_API_KEY=<your api key>
-MONGODB_URI=<mongodb url>
-SENDGRID_API_KEY=<sendgrid api key>
+JWT_SECRET="mySuperSecretKey123!@#"
+EMAIL_USER="<your email>"
+GEMINI_API_KEY="<your api key>"
+MONGODB_URI="<mongodb url>"
+SENDGRID_API_KEY="<sendgrid api key>"
 ```
 **SENDGRID_API_KEY**
 [Generate API Key](https://sendgrid.com/en-us/solutions/email-api)
